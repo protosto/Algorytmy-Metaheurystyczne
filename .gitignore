@@ -21,3 +21,6 @@ buildNumber.properties
 .idea/
 *.iml
 *.iws
+
+#TSP files
+*.tsp
