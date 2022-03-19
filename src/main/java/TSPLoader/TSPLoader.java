@@ -26,7 +26,7 @@ public class TSPLoader {
 
         String edgeWeightType = line.split(":")[1].trim();
 
-        if(edgeWeightType.equals("EUC_2D")) {
+        if(edgeWeightType.equals("EUC_2D") || edgeWeightType.equals("GEO")) {
             while(!scanner.next().equals("NODE_COORD_SECTION")) {
                 scanner.nextLine();
             }
@@ -66,5 +66,22 @@ public class TSPLoader {
         else {
             throw new IllegalArgumentException();
         }
+    }
+
+    public double[][] loadCoordinatesMatrixFromFile(String filePath) throws FileNotFoundException, IllegalArgumentException {
+        Scanner scanner = new Scanner(new File(filePath));
+        String line = "";
+
+        while(!Pattern.matches("^DIMENgitSION.*", line)) {
+            line = scanner.nextLine();
+        }
+
+        int n = Integer.parseInt(line.split(":")[1].trim());
+
+        while(!scanner.next().equals("NODE_COORD_SECTION")) {
+            scanner.nextLine();
+        }
+
+        return new EuclideanCoordinatesLoader().loadCoordinates(scanner, n);
     }
 }

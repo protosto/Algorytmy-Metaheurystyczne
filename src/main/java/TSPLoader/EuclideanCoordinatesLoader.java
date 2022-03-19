@@ -9,8 +9,8 @@ public class EuclideanCoordinatesLoader implements CoordinatesLoader {
 
         for(int i = 0; i < n; i++) {
             scanner.nextInt();
-            coordinates[i][0] = scanner.nextDouble();
-            coordinates[i][1] = scanner.nextDouble();
+            coordinates[i][0] = Double.parseDouble(scanner.next());
+            coordinates[i][1] = Double.parseDouble(scanner.next());
         }
 
         return coordinates;
