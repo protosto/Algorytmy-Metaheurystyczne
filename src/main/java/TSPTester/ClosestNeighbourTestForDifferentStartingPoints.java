@@ -1,5 +1,7 @@
 package TSPTester;
 
+import TSPSolver.ClosestNeighbourMethod;
+
 import java.util.ArrayList;
 import java.util.List;
 
