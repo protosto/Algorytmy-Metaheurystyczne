@@ -2,9 +2,9 @@ package TSPGenerator;
 
 import java.util.Random;
 
-public class UnsymmetricTableGenerator {
+public class AsymmetricTableGenerator {
 
-    public static double[][] generateUnsymmetricTable( int nr_of_points, double range ){
+    public static double[][] generateAsymmetricTable( int nr_of_points, double range ){
 
         double [][]tab = new double[nr_of_points][nr_of_points];
 
@@ -12,7 +12,7 @@ public class UnsymmetricTableGenerator {
 
         for( int i = 0; i < nr_of_points; i++ ){
             for( int j = 0; j < nr_of_points; j++ ){
-                if( i != j ) tab[i][j] =  rand.nextDouble(range);
+                if( i != j ) tab[i][j] =  rand.nextDouble(range) + 1;
             }
             tab[i][i] = 0;
         }

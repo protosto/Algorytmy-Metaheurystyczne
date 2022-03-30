@@ -11,9 +11,9 @@ public class SymmetricTableGenerator {
         Random rand = new Random();
 
         for( int i = 0; i < nr_of_points; i++ ){
-            for( int j = 0; j < nr_of_points-i; j++ ){
+            for( int j = 0; j < nr_of_points; j++ ){
                 if( i != j ){
-                    tab[i][j] =  rand.nextDouble(range);
+                    tab[i][j] =  rand.nextDouble(range) + 1;
                     tab[j][i] =  tab[i][j];
                 }
             }

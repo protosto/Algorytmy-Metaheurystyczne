@@ -24,3 +24,6 @@ buildNumber.properties
 
 #TSP files
 *.tsp
+
+#Log files
+*.log

@@ -40,4 +40,8 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
 
         return pointList;
     }
+
+    public void setK(Integer k) {
+        this.k = k;
+    }
 }

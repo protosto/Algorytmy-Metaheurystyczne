@@ -1,13 +1,13 @@
-import TSPLoader.TSPLoader;
-import TSPSolver.KRandomSolutionGenerator;
-import TSPSolver.SolutionGenerator;
-import TSPSolver.TwoOptSolutionGenerator;
 
-import java.io.FileNotFoundException;
-import java.util.List;
+import TSPTester.KValueTester;
+import TSPTester.TimeAndQualityTester;
+import java.io.IOException;
 
 public class TSP {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
+        TimeAndQualityTester timeAndQualityTester = new TimeAndQualityTester();
+        KValueTester kValueTester = new KValueTester();
+        timeAndQualityTester.test(50);
+        kValueTester.test(50);
     }
 }

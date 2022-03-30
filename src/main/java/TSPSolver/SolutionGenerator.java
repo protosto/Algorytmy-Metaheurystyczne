@@ -6,7 +6,7 @@ public abstract class SolutionGenerator {
 
     public abstract List<Integer> solve(double[][] distanceTable);
 
-    public double objectiveFunction(List<Integer> pointList, double[][] distanceMatrix) {
+    public static double objectiveFunction(List<Integer> pointList, double[][] distanceMatrix) {
         double objectiveFunctionValue = 0.0;
 
         int size = pointList.size() - 1;
