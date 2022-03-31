@@ -24,7 +24,7 @@ public class KValueTester {
         List<Integer> solution;
 
         for(int i = 0; i < k; i++) {
-            testMatrix = symmetricTableGenerator.generateSymmetricTable(100,50);
+            testMatrix = symmetricTableGenerator.generateSymmetricTable(200,50);
 
             for(int j = 100; j <= 10000; j += 100) {
                 kRandomSolutionGenerator.setK(j);

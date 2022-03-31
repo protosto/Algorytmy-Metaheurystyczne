@@ -27,7 +27,7 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
         double currentMinObjectiveFunctionValue = objectiveFunction(pointList, distanceMatrix);
         double currentObjectiveFunctionValue;
 
-        for(int i = 0; i < k; i++) {
+        for(int i = 1; i < k; i++) {
             Collections.shuffle(temp);
             currentObjectiveFunctionValue = objectiveFunction(temp, distanceMatrix);
 
