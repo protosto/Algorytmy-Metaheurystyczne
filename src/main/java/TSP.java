@@ -1,27 +1,18 @@
+import TSPLoader.TSPLoader;
+import TSPSolver.ClosestNeighbourMethod;
+import TSPSolver.SolutionGenerator;
+import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
+import TSPSolver.TabuSearch.StopCondition.NIterationsStopCondition;
+import TSPSolver.TabuSearch.TabuListManager.StaticExpirationTimeTabuListManager;
+import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
 
-import TSPGenerator.SymmetricTableGenerator;
-import TSPSolver.KRandomSolutionGenerator;
-import TSPTester.DataFromFileTest;
-import TSPTester.KValueTester;
-import TSPTester.TimeAndQualityTester;
 import java.io.IOException;
-import java.util.List;
 
 public class TSP {
     public static void main(String[] args) throws IOException {
-        //TimeAndQualityTester timeAndQualityTester = new TimeAndQualityTester();
-        //KValueTester kValueTester = new KValueTester();
-        //DataFromFileTest dataFromFileTest = new DataFromFileTest();
-        //timeAndQualityTester.test(50);
-        //kValueTester.test(50);
-        //dataFromFileTest.test();
-        KRandomSolutionGenerator kRandomSolutionGenerator = new KRandomSolutionGenerator(50);
-        SymmetricTableGenerator symmetricTableGenerator = new SymmetricTableGenerator();
+        TSPLoader tspLoader = new TSPLoader();
+        TabuSearchSolutionGenerator tabuSearchSolutionGenerator = new TabuSearchSolutionGenerator(new ClosestNeighbourMethod(), new NIterationsStopCondition(100), new AllSwapsNeighbourhoodGenerator(), new StaticExpirationTimeTabuListManager(10));
 
-        List<Integer> solution = kRandomSolutionGenerator.solve(symmetricTableGenerator.generateSymmetricTable(20, 50));
-
-        for(Integer i : solution) {
-            System.out.print(i + " w");
-        }
+        System.out.println(SolutionGenerator.objectiveFunction(tabuSearchSolutionGenerator.solve(tspLoader.loadDistanceMatrixFromFile("rd100.tsp")) ,tspLoader.loadDistanceMatrixFromFile("rd100.tsp")));
     }
 }

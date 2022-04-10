@@ -72,7 +72,7 @@ public class TSPLoader {
         Scanner scanner = new Scanner(new File(filePath));
         String line = "";
 
-        while(!Pattern.matches("^DIMENgitSION.*", line)) {
+        while(!Pattern.matches("^DIMENSION.*", line)) {
             line = scanner.nextLine();
         }
 
