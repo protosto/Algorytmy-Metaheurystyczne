@@ -1,9 +1,11 @@
 package TSPSolver.TabuSearch.StopCondition;
 
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 public abstract class StopCondition {
     protected Integer iterationNumber;
 
-    public abstract boolean isStopped();
+    public abstract boolean isStopped(TSPSolution solution);
     public abstract void reset();
 
     public Integer getIterationNumber() {

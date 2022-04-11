@@ -2,11 +2,13 @@ package TSPSolver.TabuSearch.TabuListManager;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 
-import java.util.List;
+import java.util.HashMap;
 
-public interface TabuListManager {
-    boolean isTabu(TSPSolution solution, Integer iterationNumber);
-    void addToTabuList(TSPSolution solution, Integer iterationNumber);
-    void filterTabuList();
-    void reset();
+public abstract class TabuListManager {
+    protected HashMap<TSPSolution, Integer> tabuList;
+
+    public abstract boolean isTabu(TSPSolution solution, Integer iterationNumber);
+    public abstract void addToTabuList(TSPSolution solution, Integer iterationNumber);
+    public abstract void filterTabuList();
+    public abstract void reset();
 }

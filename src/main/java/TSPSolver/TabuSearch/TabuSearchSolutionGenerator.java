@@ -5,7 +5,6 @@ import TSPSolver.TabuSearch.NeighbourhoodGenerator.NeighbourhoodGenerator;
 import TSPSolver.TabuSearch.StopCondition.StopCondition;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.TabuListManager;
-
 import java.util.List;
 import java.util.TreeSet;
 
@@ -38,11 +37,11 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator {
 
                     break;
                 }
-
-                tabuListManager.addToTabuList(solution, stopCondition.getIterationNumber());
             }
+
+            tabuListManager.addToTabuList(solution, stopCondition.getIterationNumber());
         }
-        while(!stopCondition.isStopped());
+        while(!stopCondition.isStopped(solution));
 
         return solution.getSolution();
     }

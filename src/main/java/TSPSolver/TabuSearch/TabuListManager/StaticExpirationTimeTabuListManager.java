@@ -3,8 +3,7 @@ package TSPSolver.TabuSearch.TabuListManager;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import java.util.HashMap;
 
-public class StaticExpirationTimeTabuListManager implements TabuListManager {
-    private HashMap<TSPSolution, Integer> tabuList;
+public class StaticExpirationTimeTabuListManager extends TabuListManager {
     private Integer expirationTime;
 
     public StaticExpirationTimeTabuListManager(Integer expirationTime) {
@@ -15,7 +14,7 @@ public class StaticExpirationTimeTabuListManager implements TabuListManager {
     @Override
     public boolean isTabu(TSPSolution solution, Integer iterationNumber) {
         if(tabuList.containsKey(solution)) {
-            if(tabuList.get(solution) > iterationNumber) {
+            if(tabuList.get(solution) < iterationNumber) {
                 tabuList.remove(solution);
 
                 return false;
@@ -47,4 +46,5 @@ public class StaticExpirationTimeTabuListManager implements TabuListManager {
     public void setExpirationTime(Integer expirationTime) {
         this.expirationTime = expirationTime;
     }
+
 }

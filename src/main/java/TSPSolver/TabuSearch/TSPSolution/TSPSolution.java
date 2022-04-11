@@ -8,23 +8,28 @@ import java.util.List;
 public class TSPSolution implements Comparable {
     private List<Integer> solution;
     private static double[][] distanceMatrix;
+    private double objectiveFunctionValue;
+
+    public TSPSolution(List<Integer> solution, double objectiveFunctionValue) {
+        List<Integer> list = new ArrayList<>();
+        list.addAll(solution);
+        this.solution = list;
+        this.objectiveFunctionValue = objectiveFunctionValue;
+    }
 
     public TSPSolution(List<Integer> solution) {
         List<Integer> list = new ArrayList<>();
         list.addAll(solution);
-
         this.solution = list;
+        this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, distanceMatrix);
     }
 
     @Override
     public int compareTo(Object o) {
-        double a = SolutionGenerator.objectiveFunction(this.solution, distanceMatrix);
-        double b = SolutionGenerator.objectiveFunction(((TSPSolution) o).getSolution(), distanceMatrix);
-
-        if(a > b) {
+        if(this.getObjectiveFunctionValue() > ((TSPSolution) o).getObjectiveFunctionValue()) {
             return 1;
         }
-        else if (a < b) {
+        else if (this.getObjectiveFunctionValue() < ((TSPSolution) o).getObjectiveFunctionValue()) {
             return -1;
         }
         else {
@@ -35,6 +40,11 @@ public class TSPSolution implements Comparable {
     @Override
     public boolean equals(Object o) {
         return this.solution.equals(((TSPSolution) o).getSolution());
+    }
+
+    @Override
+    public int hashCode() {
+        return solution.hashCode();
     }
 
     public List<Integer> getSolution() {
@@ -51,5 +61,13 @@ public class TSPSolution implements Comparable {
 
     public static void setDistanceMatrix(double[][] distanceMatrix) {
         TSPSolution.distanceMatrix = distanceMatrix;
+    }
+
+    public double getObjectiveFunctionValue() {
+        return objectiveFunctionValue;
+    }
+
+    public void setObjectiveFunctionValue(double objectiveFunctionValue) {
+        this.objectiveFunctionValue = objectiveFunctionValue;
     }
 }

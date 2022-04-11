@@ -1,22 +1,21 @@
 package TSPSolver.TabuSearch.NeighbourhoodGenerator;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.Collections;
 import java.util.TreeSet;
 
-public class AllSwapsNeighbourhoodGenerator implements NeighbourhoodGenerator {
+public class AllNeighbouringSwapsNeighbourhoodGenerator implements NeighbourhoodGenerator{
     @Override
     public TreeSet<TSPSolution> generateNeighbourhood(TSPSolution solution) {
         TreeSet<TSPSolution> neighbourhood = new TreeSet<>();
 
         for(int i = 0; i < solution.getSolution().size() - 1; i++) {
-            for(int j = i + 1; j < solution.getSolution().size(); j++) {
-                Collections.swap(solution.getSolution(), i, j);
-                TSPSolution neighbour = new TSPSolution(solution.getSolution());
-                Collections.swap(solution.getSolution(), i, j);
+            Collections.swap(solution.getSolution(), i, i + 1);
+            TSPSolution neighbour = new TSPSolution(solution.getSolution());
+            Collections.swap(solution.getSolution(), i, i + 1);
 
-                neighbourhood.add(neighbour);
-            }
+            neighbourhood.add(neighbour);
         }
 
         return neighbourhood;

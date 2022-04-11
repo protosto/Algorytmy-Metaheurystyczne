@@ -1,5 +1,7 @@
 package TSPSolver.TabuSearch.StopCondition;
 
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 public class NIterationsStopCondition extends StopCondition {
     private Integer N;
 
@@ -9,8 +11,8 @@ public class NIterationsStopCondition extends StopCondition {
     }
 
     @Override
-    public boolean isStopped() {
-        if(iterationNumber == N) {
+    public boolean isStopped(TSPSolution solution) {
+        if(iterationNumber.equals(N)) {
             reset();
 
             return true;
@@ -27,5 +29,11 @@ public class NIterationsStopCondition extends StopCondition {
         iterationNumber = 0;
     }
 
+    public Integer getN() {
+        return N;
+    }
 
+    public void setN(Integer n) {
+        N = n;
+    }
 }
