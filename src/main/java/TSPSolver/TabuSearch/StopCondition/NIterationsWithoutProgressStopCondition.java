@@ -17,11 +17,11 @@ public class NIterationsWithoutProgressStopCondition extends StopCondition {
     }
 
     @Override
-    public boolean isStopped(TSPSolution currentSolution, TSPSolution bestSolution) {
+    public boolean isStopped(TSPSolution currentSolution, TSPSolution localBestSolution) {
         iterationNumber++;
 
-        if(!this.bestSolution.equals(bestSolution)) {
-            this.bestSolution = bestSolution;
+        if(!this.bestSolution.equals(localBestSolution)) {
+            this.bestSolution = localBestSolution;
 
             iterationsWithoutProgress = 0;
         }

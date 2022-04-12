@@ -14,7 +14,7 @@ public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryM
     }
 
     @Override
-    public void manage(TSPSolution currentSolution, TSPSolution bestSolution, TreeSet neighbourhood, double[][] currentDistanceMatrix, Integer iterationNumber) {
+    public void manage(TSPSolution currentSolution, TSPSolution localBestSolution, TreeSet neighbourhood, double[][] currentDistanceMatrix, Integer iterationNumber) {
         if(isSymmetrical) {
             for(int i = 0; i < currentSolution.getSolution().size() - 1; i++) {
                 currentDistanceMatrix[currentSolution.getSolution().get(i)][currentSolution.getSolution().get(i + 1)] += penaltyValue;
@@ -26,10 +26,5 @@ public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryM
                 currentDistanceMatrix[currentSolution.getSolution().get(i)][currentSolution.getSolution().get(i + 1)] += penaltyValue;
             }
         }
-
-        currentSolution.setDistanceMatrix(currentDistanceMatrix);
-        bestSolution.setDistanceMatrix(currentDistanceMatrix);
-        currentSolution.updateObjectiveFunctionValue();
-        bestSolution.updateObjectiveFunctionValue();
     }
 }

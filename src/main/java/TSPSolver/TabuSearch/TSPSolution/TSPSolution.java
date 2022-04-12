@@ -13,7 +13,7 @@ public class TSPSolution implements Comparable {
     public TSPSolution() {
         List<Integer> list = new ArrayList<>();
         this.solution = list;
-        this.objectiveFunctionValue = 0;
+        this.objectiveFunctionValue = Double.MAX_VALUE;
     }
 
     public TSPSolution(List<Integer> solution, double[][] distanceMatrix) {
