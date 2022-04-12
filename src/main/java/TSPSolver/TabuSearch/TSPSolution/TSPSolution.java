@@ -7,21 +7,21 @@ import java.util.List;
 
 public class TSPSolution implements Comparable {
     private List<Integer> solution;
-    private static double[][] distanceMatrix;
+    private double[][] distanceMatrix;
     private double objectiveFunctionValue;
 
-    public TSPSolution(List<Integer> solution, double objectiveFunctionValue) {
+    public TSPSolution() {
         List<Integer> list = new ArrayList<>();
-        list.addAll(solution);
         this.solution = list;
-        this.objectiveFunctionValue = objectiveFunctionValue;
+        this.objectiveFunctionValue = 0;
     }
 
-    public TSPSolution(List<Integer> solution) {
+    public TSPSolution(List<Integer> solution, double[][] distanceMatrix) {
         List<Integer> list = new ArrayList<>();
         list.addAll(solution);
         this.solution = list;
-        this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, distanceMatrix);
+        this.distanceMatrix = distanceMatrix;
+        this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, this.distanceMatrix);
     }
 
     @Override
@@ -47,6 +47,10 @@ public class TSPSolution implements Comparable {
         return solution.hashCode();
     }
 
+    public void updateObjectiveFunctionValue() {
+        this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, distanceMatrix);
+    }
+
     public List<Integer> getSolution() {
         return solution;
     }
@@ -55,12 +59,12 @@ public class TSPSolution implements Comparable {
         this.solution = solution;
     }
 
-    public static double[][] getDistanceMatrix() {
+    public double[][] getDistanceMatrix() {
         return distanceMatrix;
     }
 
-    public static void setDistanceMatrix(double[][] distanceMatrix) {
-        TSPSolution.distanceMatrix = distanceMatrix;
+    public void setDistanceMatrix(double[][] distanceMatrix) {
+        this.distanceMatrix = distanceMatrix;
     }
 
     public double getObjectiveFunctionValue() {

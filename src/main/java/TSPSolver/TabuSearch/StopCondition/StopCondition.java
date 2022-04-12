@@ -5,7 +5,7 @@ import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 public abstract class StopCondition {
     protected Integer iterationNumber;
 
-    public abstract boolean isStopped(TSPSolution solution);
+    public abstract boolean isStopped(TSPSolution currentSolution, TSPSolution bestSolution);
     public abstract void reset();
 
     public Integer getIterationNumber() {
