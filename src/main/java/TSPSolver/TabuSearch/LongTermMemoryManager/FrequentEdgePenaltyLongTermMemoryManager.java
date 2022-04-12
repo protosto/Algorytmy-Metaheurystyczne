@@ -1,7 +1,6 @@
 package TSPSolver.TabuSearch.LongTermMemoryManager;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
-
 import java.util.TreeSet;
 
 public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryManager {
@@ -14,7 +13,7 @@ public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryM
     }
 
     @Override
-    public void manage(TSPSolution currentSolution, TSPSolution localBestSolution, TreeSet neighbourhood, double[][] currentDistanceMatrix, Integer iterationNumber) {
+    public void manage(TSPSolution currentSolution, TSPSolution localBestSolution, TreeSet<TSPSolution> neighbourhood, double[][] currentDistanceMatrix, Integer iterationNumber) {
         if(isSymmetrical) {
             for(int i = 0; i < currentSolution.getSolution().size() - 1; i++) {
                 currentDistanceMatrix[currentSolution.getSolution().get(i)][currentSolution.getSolution().get(i + 1)] += penaltyValue;

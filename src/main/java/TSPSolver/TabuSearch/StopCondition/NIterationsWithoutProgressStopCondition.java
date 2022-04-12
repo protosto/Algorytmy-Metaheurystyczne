@@ -2,8 +2,6 @@ package TSPSolver.TabuSearch.StopCondition;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 
-import java.util.ArrayList;
-
 public class NIterationsWithoutProgressStopCondition extends StopCondition {
     private Integer N;
     private Integer iterationsWithoutProgress;

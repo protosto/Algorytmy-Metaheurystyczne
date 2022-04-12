@@ -13,7 +13,7 @@ public class StaticTabuTenureTabuListManager extends TabuListManager {
     }
 
     @Override
-    public boolean isTabu(TSPSolution currentSolution, TreeSet neighbourhood, Integer iterationNumber) {
+    public boolean isTabu(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber) {
         if(tabuList.containsKey(currentSolution)) {
             if(tabuList.get(currentSolution) < iterationNumber) {
                 tabuList.remove(currentSolution);
@@ -30,12 +30,12 @@ public class StaticTabuTenureTabuListManager extends TabuListManager {
     }
 
     @Override
-    public void addToTabuList(TSPSolution currentSolution, TreeSet neighbourhood, Integer iterationNumber) {
+    public void addToTabuList(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber) {
         tabuList.put(currentSolution, iterationNumber + tabuTenure);
     }
 
     @Override
-    public void filterTabuList(TSPSolution currentSolution, TreeSet neighbourhood, Integer iterationNumber) {
+    public void filterTabuList(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber) {
 
     }
 

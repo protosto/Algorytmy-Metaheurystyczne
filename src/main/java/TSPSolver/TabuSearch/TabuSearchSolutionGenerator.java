@@ -3,6 +3,7 @@ package TSPSolver.TabuSearch;
 import TSPSolver.SolutionGenerator;
 import TSPSolver.TabuSearch.LongTermMemoryManager.LongTermMemoryManager;
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.NeighbourhoodGenerator;
+import TSPSolver.TabuSearch.NeighbourhoodManager.NeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.StopCondition;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.TabuListManager;
@@ -14,17 +15,19 @@ public class TabuSearchSolutionGenerator extends Thread {
     private SolutionGenerator startingAlgorithm;
     private StopCondition stopCondition;
     private NeighbourhoodGenerator neighbourhoodGenerator;
+    private NeighbourhoodManager neighbourhoodManager;
     private TabuListManager tabuListManager;
     private LongTermMemoryManager longTermMemoryManager;
     private double[][] initialDistanceMatrix;
     private TSPSolution localBestSolution;
     private volatile static TSPSolution globalBestSolution = null;
 
-    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, SolutionGenerator startingAlgorithm, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, TabuListManager tabuListManager, LongTermMemoryManager longTermMemoryManager) {
+    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, SolutionGenerator startingAlgorithm, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, LongTermMemoryManager longTermMemoryManager) {
         this.initialDistanceMatrix = initialDistanceMatrix;
         this.startingAlgorithm = startingAlgorithm;
         this.stopCondition = stopCondition;
         this.neighbourhoodGenerator = neighbourhoodGenerator;
+        this.neighbourhoodManager = neighbourhoodManager;
         this.tabuListManager = tabuListManager;
         this.longTermMemoryManager = longTermMemoryManager;
     }
@@ -46,14 +49,7 @@ public class TabuSearchSolutionGenerator extends Thread {
         do {
             TreeSet<TSPSolution> neighbourhood = neighbourhoodGenerator.generateNeighbourhood(currentSolution, currentDistanceMatrix);
 
-            for(TSPSolution neighbourSolution : neighbourhood) {
-                if(!tabuListManager.isTabu(neighbourSolution, neighbourhood, stopCondition.getIterationNumber())) {
-                    currentSolution = neighbourSolution;
-
-                    break;
-                }
-            }
-
+            currentSolution = neighbourhoodManager.chooseNeighbour(neighbourhood, tabuListManager, stopCondition.getIterationNumber());
             currentSolution.setDistanceMatrix(initialDistanceMatrix);
             currentSolution.updateObjectiveFunctionValue();
 
