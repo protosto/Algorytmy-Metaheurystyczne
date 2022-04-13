@@ -7,4 +7,5 @@ import java.util.TreeSet;
 
 public interface NeighbourhoodManager {
     TSPSolution chooseNeighbour(TreeSet<TSPSolution> neighbourhood, TabuListManager tabuListManager, Integer iterationNumber);
+    NeighbourhoodManager copy();
 }

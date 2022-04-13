@@ -16,4 +16,11 @@ public class BestNonTabuNeighbourNeighbourhoodManager implements NeighbourhoodMa
 
         return neighbourhood.first();
     }
+
+    @Override
+    public NeighbourhoodManager copy() {
+        return new BestNonTabuNeighbourNeighbourhoodManager();
+    }
+
+
 }

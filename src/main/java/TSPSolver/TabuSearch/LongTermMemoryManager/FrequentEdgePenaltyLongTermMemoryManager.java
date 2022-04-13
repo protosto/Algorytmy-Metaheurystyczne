@@ -26,4 +26,9 @@ public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryM
             }
         }
     }
+
+    @Override
+    public LongTermMemoryManager copy() {
+        return new FrequentEdgePenaltyLongTermMemoryManager(isSymmetrical, penaltyValue);
+    }
 }

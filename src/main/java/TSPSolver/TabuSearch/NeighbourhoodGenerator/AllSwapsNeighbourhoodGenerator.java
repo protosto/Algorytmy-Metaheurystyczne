@@ -1,5 +1,6 @@
 package TSPSolver.TabuSearch.NeighbourhoodGenerator;
 
+import TSPSolver.TabuSearch.LongTermMemoryManager.LongTermMemoryManager;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import java.util.Collections;
 import java.util.TreeSet;
@@ -20,5 +21,10 @@ public class AllSwapsNeighbourhoodGenerator implements NeighbourhoodGenerator {
         }
 
         return neighbourhood;
+    }
+
+    @Override
+    public NeighbourhoodGenerator copy() {
+        return new AllSwapsNeighbourhoodGenerator();
     }
 }

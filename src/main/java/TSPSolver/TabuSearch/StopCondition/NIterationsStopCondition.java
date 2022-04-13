@@ -29,6 +29,11 @@ public class NIterationsStopCondition extends StopCondition {
         iterationNumber = 0;
     }
 
+    @Override
+    public StopCondition copy() {
+        return new NIterationsWithoutProgressStopCondition(N);
+    }
+
     public Integer getN() {
         return N;
     }

@@ -39,4 +39,9 @@ public class NIterationsWithoutProgressStopCondition extends StopCondition {
         iterationNumber = 0;
         iterationsWithoutProgress = 0;
     }
+
+    @Override
+    public StopCondition copy() {
+        return new NIterationsWithoutProgressStopCondition(N);
+    }
 }

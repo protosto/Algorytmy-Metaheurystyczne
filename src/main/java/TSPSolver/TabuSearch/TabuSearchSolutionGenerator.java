@@ -1,6 +1,7 @@
 package TSPSolver.TabuSearch;
 
 import TSPSolver.SolutionGenerator;
+import TSPSolver.TabuSearch.IntermediateTermMemoryManager.IntermediateTermMemoryManager;
 import TSPSolver.TabuSearch.LongTermMemoryManager.LongTermMemoryManager;
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.NeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.NeighbourhoodManager;
@@ -12,29 +13,31 @@ import java.util.Arrays;
 import java.util.TreeSet;
 
 public class TabuSearchSolutionGenerator extends Thread {
-    private SolutionGenerator startingAlgorithm;
+    private TSPSolution initialSolution;
     private StopCondition stopCondition;
     private NeighbourhoodGenerator neighbourhoodGenerator;
     private NeighbourhoodManager neighbourhoodManager;
     private TabuListManager tabuListManager;
+    private IntermediateTermMemoryManager intermediateTermMemoryManager;
     private LongTermMemoryManager longTermMemoryManager;
     private double[][] initialDistanceMatrix;
     private TSPSolution localBestSolution;
     private volatile static TSPSolution globalBestSolution = null;
 
-    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, SolutionGenerator startingAlgorithm, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, LongTermMemoryManager longTermMemoryManager) {
+    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager) {
         this.initialDistanceMatrix = initialDistanceMatrix;
-        this.startingAlgorithm = startingAlgorithm;
+        this.initialSolution = initialSolution;
         this.stopCondition = stopCondition;
         this.neighbourhoodGenerator = neighbourhoodGenerator;
         this.neighbourhoodManager = neighbourhoodManager;
         this.tabuListManager = tabuListManager;
+        this.intermediateTermMemoryManager = intermediateTermMemoryManager;
         this.longTermMemoryManager = longTermMemoryManager;
     }
 
     public synchronized void solve() {
         double[][] currentDistanceMatrix = Arrays.stream(initialDistanceMatrix).map(double[]::clone).toArray(double[][]::new);
-        TSPSolution currentSolution = new TSPSolution(startingAlgorithm.solve(initialDistanceMatrix), currentDistanceMatrix);
+        TSPSolution currentSolution = initialSolution;
         localBestSolution = currentSolution;
 
         if(globalBestSolution == null) {
@@ -61,7 +64,13 @@ public class TabuSearchSolutionGenerator extends Thread {
                 }
             }
 
-            longTermMemoryManager.manage(currentSolution, localBestSolution, neighbourhood, currentDistanceMatrix, stopCondition.getIterationNumber());
+            if(intermediateTermMemoryManager != null) {
+                intermediateTermMemoryManager.manage(this, currentSolution, localBestSolution, neighbourhood, currentDistanceMatrix, stopCondition.getIterationNumber());
+            }
+            if(longTermMemoryManager != null) {
+                longTermMemoryManager.manage(currentSolution, localBestSolution, neighbourhood, currentDistanceMatrix, stopCondition.getIterationNumber());
+            }
+
             tabuListManager.addToTabuList(currentSolution, neighbourhood, stopCondition.getIterationNumber());
         }
         while(!stopCondition.isStopped(currentSolution, localBestSolution));
@@ -70,6 +79,7 @@ public class TabuSearchSolutionGenerator extends Thread {
     @Override
     public void run() {
         solve();
+        System.out.println("Local best: " + this.getLocalBestSolution().getObjectiveFunctionValue());
     }
 
     public void reset() {
@@ -78,12 +88,8 @@ public class TabuSearchSolutionGenerator extends Thread {
         tabuListManager.reset();
     }
 
-    public SolutionGenerator getStartingAlgorithm() {
-        return startingAlgorithm;
-    }
-
-    public void setStartingAlgorithm(SolutionGenerator startingAlgorithm) {
-        this.startingAlgorithm = startingAlgorithm;
+    public TabuSearchSolutionGenerator copy(TSPSolution initialSolution) {
+        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolution, stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null);
     }
 
     public StopCondition getStopCondition() {
@@ -140,5 +146,29 @@ public class TabuSearchSolutionGenerator extends Thread {
 
     public void setLocalBestSolution(TSPSolution localBestSolution) {
         this.localBestSolution = localBestSolution;
+    }
+
+    public TSPSolution getInitialSolution() {
+        return initialSolution;
+    }
+
+    public void setInitialSolution(TSPSolution initialSolution) {
+        this.initialSolution = initialSolution;
+    }
+
+    public NeighbourhoodManager getNeighbourhoodManager() {
+        return neighbourhoodManager;
+    }
+
+    public void setNeighbourhoodManager(NeighbourhoodManager neighbourhoodManager) {
+        this.neighbourhoodManager = neighbourhoodManager;
+    }
+
+    public IntermediateTermMemoryManager getIntermediateTermMemoryManager() {
+        return intermediateTermMemoryManager;
+    }
+
+    public void setIntermediateTermMemoryManager(IntermediateTermMemoryManager intermediateTermMemoryManager) {
+        this.intermediateTermMemoryManager = intermediateTermMemoryManager;
     }
 }

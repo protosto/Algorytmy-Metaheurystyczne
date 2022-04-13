@@ -20,4 +20,8 @@ public class AllNeighbouringSwapsNeighbourhoodGenerator implements Neighbourhood
 
         return neighbourhood;
     }
+
+    public NeighbourhoodGenerator copy() {
+        return new AllNeighbouringSwapsNeighbourhoodGenerator();
+    }
 }

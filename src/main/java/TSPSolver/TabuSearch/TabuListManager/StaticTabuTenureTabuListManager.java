@@ -44,6 +44,11 @@ public class StaticTabuTenureTabuListManager extends TabuListManager {
         tabuList.clear();
     }
 
+    @Override
+    public TabuListManager copy() {
+        return new StaticTabuTenureTabuListManager(tabuTenure);
+    }
+
     public void setTabuTenure(Integer tabuTenure) {
         this.tabuTenure = tabuTenure;
     }

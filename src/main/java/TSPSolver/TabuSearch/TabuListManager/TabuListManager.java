@@ -11,4 +11,5 @@ public abstract class TabuListManager {
     public abstract void addToTabuList(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber);
     public abstract void filterTabuList(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber);
     public abstract void reset();
+    public abstract TabuListManager copy();
 }
