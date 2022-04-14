@@ -8,8 +8,8 @@ import java.util.TreeSet;
 public class BestNonTabuNeighbourNeighbourhoodManager implements NeighbourhoodManager {
     @Override
     public TSPSolution chooseNeighbour(TreeSet<TSPSolution> neighbourhood, TabuListManager tabuListManager, Integer iterationNumber) {
-        for(TSPSolution neighbourSolution : neighbourhood) {
-            if(!tabuListManager.isTabu(neighbourSolution, neighbourhood, iterationNumber)) {
+        for (TSPSolution neighbourSolution : neighbourhood) {
+            if (!tabuListManager.isTabu(neighbourSolution, neighbourhood, iterationNumber)) {
                 return neighbourSolution;
             }
         }

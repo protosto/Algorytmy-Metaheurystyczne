@@ -3,7 +3,7 @@ package TSPSolver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExtendedClosestNeighbourMethod extends SolutionGenerator{
+public class ExtendedClosestNeighbourMethod extends SolutionGenerator {
     @Override
     public List<Integer> solve(double[][] distanceMatrix) {
 
@@ -11,7 +11,7 @@ public class ExtendedClosestNeighbourMethod extends SolutionGenerator{
         List<Integer> currentPointList = new ArrayList<>();
         List<Integer> uncheckedPointsList = new ArrayList<>();
 
-        for(int i = 1; i < distanceMatrix.length; i++) {
+        for (int i = 1; i < distanceMatrix.length; i++) {
             uncheckedPointsList.add(i);
         }
 
@@ -19,11 +19,11 @@ public class ExtendedClosestNeighbourMethod extends SolutionGenerator{
         Double currentDistance;
         Double minDistance = objectiveFunction(minPointList, distanceMatrix);
 
-        for(Integer point : uncheckedPointsList) {
+        for (Integer point : uncheckedPointsList) {
             currentPointList = ClosestNeighbourMethod.solveFor(distanceMatrix, point);
             currentDistance = objectiveFunction(currentPointList, distanceMatrix);
 
-            if(currentDistance < minDistance) {
+            if (currentDistance < minDistance) {
                 minPointList = currentPointList;
                 minDistance = currentDistance;
             }

@@ -3,7 +3,7 @@ package TSPSolver.TabuSearch.StopCondition;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 
 public class NIterationsWithoutProgressStopCondition extends StopCondition {
-    private Integer N;
+    private final Integer N;
     private Integer iterationsWithoutProgress;
     private TSPSolution bestSolution;
 
@@ -18,20 +18,15 @@ public class NIterationsWithoutProgressStopCondition extends StopCondition {
     public boolean isStopped(TSPSolution currentSolution, TSPSolution localBestSolution) {
         iterationNumber++;
 
-        if(!this.bestSolution.equals(localBestSolution)) {
+        if (!this.bestSolution.equals(localBestSolution)) {
             this.bestSolution = localBestSolution;
 
             iterationsWithoutProgress = 0;
-        }
-        else {
+        } else {
             iterationsWithoutProgress++;
         }
 
-        if(iterationsWithoutProgress.equals(N)) {
-            return true;
-        }
-
-        return false;
+        return iterationsWithoutProgress.equals(N);
     }
 
     @Override

@@ -26,13 +26,11 @@ public class TSPSolution implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        if(this.getObjectiveFunctionValue() > ((TSPSolution) o).getObjectiveFunctionValue()) {
+        if (this.getObjectiveFunctionValue() > ((TSPSolution) o).getObjectiveFunctionValue()) {
             return 1;
-        }
-        else if (this.getObjectiveFunctionValue() < ((TSPSolution) o).getObjectiveFunctionValue()) {
+        } else if (this.getObjectiveFunctionValue() < ((TSPSolution) o).getObjectiveFunctionValue()) {
             return -1;
-        }
-        else {
+        } else {
             return 0;
         }
     }

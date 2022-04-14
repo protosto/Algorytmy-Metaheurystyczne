@@ -6,7 +6,7 @@ import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
 import java.util.TreeSet;
 
 public interface IntermediateTermMemoryManager {
-    void manage(TabuSearchSolutionGenerator tabuSearchSolutionGenerator, TSPSolution currentSolution, TSPSolution localBestSolution, TreeSet<TSPSolution> neighbourhood, double[][] currentDistanceMatrix, Integer iterationNumber);
-    boolean isAllowed(TSPSolution tspSolution);
+    void manage(TabuSearchSolutionGenerator tabuSearchSolutionGenerator, TSPSolution localBestSolution);
+
     IntermediateTermMemoryManager copy();
 }

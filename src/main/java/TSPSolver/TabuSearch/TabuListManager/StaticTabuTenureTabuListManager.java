@@ -1,6 +1,7 @@
 package TSPSolver.TabuSearch.TabuListManager;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -14,17 +15,15 @@ public class StaticTabuTenureTabuListManager extends TabuListManager {
 
     @Override
     public boolean isTabu(TSPSolution currentSolution, TreeSet<TSPSolution> neighbourhood, Integer iterationNumber) {
-        if(tabuList.containsKey(currentSolution)) {
-            if(tabuList.get(currentSolution) < iterationNumber) {
+        if (tabuList.containsKey(currentSolution)) {
+            if (tabuList.get(currentSolution) < iterationNumber) {
                 tabuList.remove(currentSolution);
 
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }

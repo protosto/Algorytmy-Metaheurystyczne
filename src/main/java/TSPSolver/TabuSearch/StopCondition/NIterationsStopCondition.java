@@ -12,12 +12,11 @@ public class NIterationsStopCondition extends StopCondition {
 
     @Override
     public boolean isStopped(TSPSolution currentSolution, TSPSolution localBestSolution) {
-        if(iterationNumber.equals(N)) {
+        if (iterationNumber.equals(N)) {
             reset();
 
             return true;
-        }
-        else {
+        } else {
             iterationNumber++;
 
             return false;

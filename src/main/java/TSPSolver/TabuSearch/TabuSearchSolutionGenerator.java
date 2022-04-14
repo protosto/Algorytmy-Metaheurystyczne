@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.TreeSet;
 
 public class TabuSearchSolutionGenerator extends Thread {
+    private volatile static TSPSolution globalBestSolution = null;
     private TSPSolution initialSolution;
     private StopCondition stopCondition;
     private NeighbourhoodGenerator neighbourhoodGenerator;
@@ -22,7 +23,6 @@ public class TabuSearchSolutionGenerator extends Thread {
     private LongTermMemoryManager longTermMemoryManager;
     private double[][] initialDistanceMatrix;
     private TSPSolution localBestSolution;
-    private volatile static TSPSolution globalBestSolution = null;
 
     public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager) {
         this.initialDistanceMatrix = initialDistanceMatrix;
@@ -35,15 +35,20 @@ public class TabuSearchSolutionGenerator extends Thread {
         this.longTermMemoryManager = longTermMemoryManager;
     }
 
+    public static TSPSolution getGlobalBestSolution() {
+        return globalBestSolution;
+    }
+
+    public static void setGlobalBestSolution(TSPSolution globalBestSolution) {
+        TabuSearchSolutionGenerator.globalBestSolution = globalBestSolution;
+    }
+
     public synchronized void solve() {
         double[][] currentDistanceMatrix = Arrays.stream(initialDistanceMatrix).map(double[]::clone).toArray(double[][]::new);
         TSPSolution currentSolution = initialSolution;
         localBestSolution = currentSolution;
 
-        if(globalBestSolution == null) {
-            globalBestSolution = currentSolution;
-        }
-        else if(globalBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
+        if (globalBestSolution == null || globalBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
             globalBestSolution = currentSolution;
         }
 
@@ -56,24 +61,24 @@ public class TabuSearchSolutionGenerator extends Thread {
             currentSolution.setDistanceMatrix(initialDistanceMatrix);
             currentSolution.updateObjectiveFunctionValue();
 
-            if(localBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
+            if (localBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
                 localBestSolution = currentSolution;
 
-                if(globalBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
+                if (globalBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
                     globalBestSolution = currentSolution;
                 }
             }
 
-            if(intermediateTermMemoryManager != null) {
-                intermediateTermMemoryManager.manage(this, currentSolution, localBestSolution, neighbourhood, currentDistanceMatrix, stopCondition.getIterationNumber());
+            if (intermediateTermMemoryManager != null) {
+                intermediateTermMemoryManager.manage(this, localBestSolution);
             }
-            if(longTermMemoryManager != null) {
+            if (longTermMemoryManager != null) {
                 longTermMemoryManager.manage(currentSolution, localBestSolution, neighbourhood, currentDistanceMatrix, stopCondition.getIterationNumber());
             }
 
             tabuListManager.addToTabuList(currentSolution, neighbourhood, stopCondition.getIterationNumber());
         }
-        while(!stopCondition.isStopped(currentSolution, localBestSolution));
+        while (!stopCondition.isStopped(currentSolution, localBestSolution));
     }
 
     @Override
@@ -130,14 +135,6 @@ public class TabuSearchSolutionGenerator extends Thread {
 
     public void setInitialDistanceMatrix(double[][] initialDistanceMatrix) {
         this.initialDistanceMatrix = initialDistanceMatrix;
-    }
-
-    public static TSPSolution getGlobalBestSolution() {
-        return globalBestSolution;
-    }
-
-    public static void setGlobalBestSolution(TSPSolution globalBestSolution) {
-        TabuSearchSolutionGenerator.globalBestSolution = globalBestSolution;
     }
 
     public TSPSolution getLocalBestSolution() {

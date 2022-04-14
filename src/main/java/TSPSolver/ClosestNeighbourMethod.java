@@ -1,16 +1,9 @@
 package TSPSolver;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class ClosestNeighbourMethod extends SolutionGenerator{
-    @Override
-    public List<Integer> solve(double[][] distanceMatrix) {
-
-        return solveFor(distanceMatrix, 0);
-    }
-
+public class ClosestNeighbourMethod extends SolutionGenerator {
     public static List<Integer> solveFor(double[][] distanceMatrix, Integer startingPoint) {
 
         List<Integer> pointList = new ArrayList<>();
@@ -19,20 +12,20 @@ public class ClosestNeighbourMethod extends SolutionGenerator{
         Double minDistance;
         Integer minPoint = null;
 
-        for(int i = 0; i < distanceMatrix.length; i++) {
+        for (int i = 0; i < distanceMatrix.length; i++) {
             unvisitedPointsList.add(i);
         }
 
         pointList.add(startingPoint);
         unvisitedPointsList.remove(startingPoint);
 
-        while(!unvisitedPointsList.isEmpty()) {
+        while (!unvisitedPointsList.isEmpty()) {
             minDistance = Double.MAX_VALUE;
 
-            for(Integer point : unvisitedPointsList) {
+            for (Integer point : unvisitedPointsList) {
                 currentDistance = distanceMatrix[startingPoint][point];
 
-                if(currentDistance < minDistance) {
+                if (currentDistance < minDistance) {
                     minDistance = currentDistance;
                     minPoint = point;
                 }
@@ -44,5 +37,11 @@ public class ClosestNeighbourMethod extends SolutionGenerator{
         }
 
         return pointList;
+    }
+
+    @Override
+    public List<Integer> solve(double[][] distanceMatrix) {
+
+        return solveFor(distanceMatrix, 0);
     }
 }

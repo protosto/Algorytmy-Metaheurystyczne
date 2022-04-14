@@ -16,7 +16,7 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
     public List<Integer> solve(double[][] distanceMatrix) {
         List<Integer> pointList = new ArrayList<>();
 
-        for(int i = 0; i < distanceMatrix.length; i++) {
+        for (int i = 0; i < distanceMatrix.length; i++) {
             pointList.add(i);
         }
 
@@ -27,11 +27,11 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
         double currentMinObjectiveFunctionValue = objectiveFunction(pointList, distanceMatrix);
         double currentObjectiveFunctionValue;
 
-        for(int i = 1; i < k; i++) {
+        for (int i = 1; i < k; i++) {
             Collections.shuffle(temp);
             currentObjectiveFunctionValue = objectiveFunction(temp, distanceMatrix);
 
-            if(currentMinObjectiveFunctionValue > currentObjectiveFunctionValue) {
+            if (currentMinObjectiveFunctionValue > currentObjectiveFunctionValue) {
                 pointList.clear();
                 pointList.addAll(temp);
                 currentMinObjectiveFunctionValue = currentObjectiveFunctionValue;
