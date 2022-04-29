@@ -1,35 +1,34 @@
 package TSPSolver;
 
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExtendedClosestNeighbourMethod extends SolutionGenerator {
     @Override
-    public List<Integer> solve(double[][] distanceMatrix) {
+    public TSPSolution solve(double[][] distanceMatrix) {
 
-        List<Integer> minPointList = new ArrayList<>();
-        List<Integer> currentPointList = new ArrayList<>();
+        TSPSolution minTSPSolution;
+        TSPSolution currentTSPSolution;
         List<Integer> uncheckedPointsList = new ArrayList<>();
 
         for (int i = 1; i < distanceMatrix.length; i++) {
             uncheckedPointsList.add(i);
         }
 
-        minPointList = ClosestNeighbourMethod.solveFor(distanceMatrix, 0);
-        Double currentDistance;
-        Double minDistance = objectiveFunction(minPointList, distanceMatrix);
+        minTSPSolution = ClosestNeighbourMethod.solveFor(distanceMatrix, 0);
 
         for (Integer point : uncheckedPointsList) {
-            currentPointList = ClosestNeighbourMethod.solveFor(distanceMatrix, point);
-            currentDistance = objectiveFunction(currentPointList, distanceMatrix);
+            currentTSPSolution = ClosestNeighbourMethod.solveFor(distanceMatrix, point);
 
-            if (currentDistance < minDistance) {
-                minPointList = currentPointList;
-                minDistance = currentDistance;
+            if (currentTSPSolution.getObjectiveFunctionValue() < minTSPSolution.getObjectiveFunctionValue()) {
+                minTSPSolution = currentTSPSolution;
             }
         }
 
-        return minPointList;
+
+        return minTSPSolution;
     }
 }
 

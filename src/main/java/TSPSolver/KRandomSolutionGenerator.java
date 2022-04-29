@@ -1,5 +1,7 @@
 package TSPSolver;
 
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +15,7 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
     }
 
     @Override
-    public List<Integer> solve(double[][] distanceMatrix) {
+    public TSPSolution solve(double[][] distanceMatrix) {
         List<Integer> pointList = new ArrayList<>();
 
         for (int i = 0; i < distanceMatrix.length; i++) {
@@ -38,7 +40,7 @@ public class KRandomSolutionGenerator extends SolutionGenerator {
             }
         }
 
-        return pointList;
+        return new TSPSolution(pointList, distanceMatrix, currentMinObjectiveFunctionValue);
     }
 
     public void setK(Integer k) {

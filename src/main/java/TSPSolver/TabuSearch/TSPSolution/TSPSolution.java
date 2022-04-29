@@ -24,6 +24,14 @@ public class TSPSolution implements Comparable {
         this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, this.distanceMatrix);
     }
 
+    public TSPSolution(List<Integer> solution, double[][] distanceMatrix, double objectiveFunctionValue) {
+        List<Integer> list = new ArrayList<>();
+        list.addAll(solution);
+        this.solution = list;
+        this.distanceMatrix = distanceMatrix;
+        this.objectiveFunctionValue = objectiveFunctionValue;
+    }
+
     @Override
     public int compareTo(Object o) {
         if (this.getObjectiveFunctionValue() > ((TSPSolution) o).getObjectiveFunctionValue()) {

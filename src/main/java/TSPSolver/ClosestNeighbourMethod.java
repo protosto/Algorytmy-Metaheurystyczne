@@ -1,10 +1,12 @@
 package TSPSolver;
 
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClosestNeighbourMethod extends SolutionGenerator {
-    public static List<Integer> solveFor(double[][] distanceMatrix, Integer startingPoint) {
+    public static TSPSolution solveFor(double[][] distanceMatrix, Integer startingPoint) {
 
         List<Integer> pointList = new ArrayList<>();
         List<Integer> unvisitedPointsList = new ArrayList<>();
@@ -36,11 +38,11 @@ public class ClosestNeighbourMethod extends SolutionGenerator {
             unvisitedPointsList.remove(startingPoint);
         }
 
-        return pointList;
+        return new TSPSolution(pointList, distanceMatrix);
     }
 
     @Override
-    public List<Integer> solve(double[][] distanceMatrix) {
+    public TSPSolution solve(double[][] distanceMatrix) {
 
         return solveFor(distanceMatrix, 0);
     }

@@ -1,7 +1,11 @@
 package TSPSolver;
 
+import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
+import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 
 public class TwoOptSolutionGenerator extends SolutionGenerator {
     private final SolutionGenerator startingAlgorithm;
@@ -11,34 +15,23 @@ public class TwoOptSolutionGenerator extends SolutionGenerator {
     }
 
     @Override
-    public List<Integer> solve(double[][] distanceMatrix) {
-        List<Integer> pointList = startingAlgorithm.solve(distanceMatrix);
-
-        double currentMinObjectiveFunctionValue = objectiveFunction(pointList, distanceMatrix);
-        int firstPoint = 0, secondPoint = 0;
-        double currentObjectiveFunctionValue;
+    public TSPSolution solve(double[][] distanceMatrix) {
+        TSPSolution minTSPSolution = startingAlgorithm.solve(distanceMatrix);
+        AllSwapsNeighbourhoodGenerator allSwapsNeighbourhoodGenerator = new AllSwapsNeighbourhoodGenerator();
 
         do {
-            Collections.swap(pointList, firstPoint, secondPoint);
-            firstPoint = 0;
-            secondPoint = 0;
+            TreeSet<TSPSolution> neighbourhood = allSwapsNeighbourhoodGenerator.generateNeighbourhood(minTSPSolution, distanceMatrix);
 
-            for (int i = 0; i < pointList.size() - 1; i++) {
-                for (int j = i + 1; j < pointList.size(); j++) {
-                    Collections.swap(pointList, i, j);
-                    currentObjectiveFunctionValue = objectiveFunction(pointList, distanceMatrix);
-                    Collections.swap(pointList, i, j);
-
-                    if (currentObjectiveFunctionValue < currentMinObjectiveFunctionValue) {
-                        firstPoint = i;
-                        secondPoint = j;
-                        currentMinObjectiveFunctionValue = currentObjectiveFunctionValue;
-                    }
-                }
+            if(neighbourhood.first().getObjectiveFunctionValue() < minTSPSolution.getObjectiveFunctionValue()) {
+                minTSPSolution = neighbourhood.first();
             }
-        }
-        while (firstPoint != 0 || secondPoint != 0);
+            else {
+                break;
+            }
 
-        return pointList;
+        }
+        while(true);
+
+        return minTSPSolution;
     }
 }

@@ -54,7 +54,7 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
     }
 
     @Override
-    public List<Integer> solve(double[][] distanceTable) {
+    public TSPSolution solve(double[][] distanceTable) {
         initialDistanceMatrix = distanceTable;
 
         futures.add(executorService.submit(this));
@@ -73,7 +73,7 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
 
         executorService.shutdownNow();
 
-        return globalBestSolution.getSolution();
+        return globalBestSolution;
     }
 
     private synchronized boolean isFinished() {
