@@ -7,6 +7,7 @@ import TSPSolver.TabuSearch.LongTermMemoryManager.FrequentEdgePenaltyLongTermMem
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.BestNonTabuNeighbourNeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.NIterationsWithoutProgressStopCondition;
+import TSPSolver.TabuSearch.StopCondition.NMillisecondsStopCondition;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.StaticTabuTenureTabuListManager;
 import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
@@ -19,24 +20,8 @@ public class TSP {
         TSPLoader tspLoader = new TSPLoader();
         double[][] distanceMatrix = tspLoader.loadDistanceMatrixFromFile("rd100.tsp");
 
-        TabuSearchSolutionGenerator tabuSearchSolutionGenerator1 = new TabuSearchSolutionGenerator(distanceMatrix, new TSPSolution(new KRandomSolutionGenerator(1).solve(distanceMatrix), distanceMatrix), new NIterationsWithoutProgressStopCondition(1000), new AllSwapsNeighbourhoodGenerator(), new BestNonTabuNeighbourNeighbourhoodManager(), new StaticTabuTenureTabuListManager(14), new RestartOnPromisingAreaIntermediateMemoryManager(1.25), new FrequentEdgePenaltyLongTermMemoryManager(true, 1));
-        Thread thread1 = new Thread(tabuSearchSolutionGenerator1);
-        TabuSearchSolutionGenerator tabuSearchSolutionGenerator2 = new TabuSearchSolutionGenerator(distanceMatrix, new TSPSolution(new KRandomSolutionGenerator(1).solve(distanceMatrix), distanceMatrix), new NIterationsWithoutProgressStopCondition(1000), new AllSwapsNeighbourhoodGenerator(), new BestNonTabuNeighbourNeighbourhoodManager(), new StaticTabuTenureTabuListManager(14), new RestartOnPromisingAreaIntermediateMemoryManager(1.25), new FrequentEdgePenaltyLongTermMemoryManager(true, 1));
-        Thread thread2 = new Thread(tabuSearchSolutionGenerator2);
-        TabuSearchSolutionGenerator tabuSearchSolutionGenerator3 = new TabuSearchSolutionGenerator(distanceMatrix, new TSPSolution(new KRandomSolutionGenerator(1).solve(distanceMatrix), distanceMatrix), new NIterationsWithoutProgressStopCondition(1000), new AllSwapsNeighbourhoodGenerator(), new BestNonTabuNeighbourNeighbourhoodManager(), new StaticTabuTenureTabuListManager(14), new RestartOnPromisingAreaIntermediateMemoryManager(1.25), new FrequentEdgePenaltyLongTermMemoryManager(true, 1));
-        Thread thread3 = new Thread(tabuSearchSolutionGenerator3);
-        TabuSearchSolutionGenerator tabuSearchSolutionGenerator4 = new TabuSearchSolutionGenerator(distanceMatrix, new TSPSolution(new KRandomSolutionGenerator(1).solve(distanceMatrix), distanceMatrix), new NIterationsWithoutProgressStopCondition(1000), new AllSwapsNeighbourhoodGenerator(), new BestNonTabuNeighbourNeighbourhoodManager(), new StaticTabuTenureTabuListManager(14), new RestartOnPromisingAreaIntermediateMemoryManager(1.25), new FrequentEdgePenaltyLongTermMemoryManager(true, 1));
-        Thread thread4 = new Thread(tabuSearchSolutionGenerator4);
+        TabuSearchSolutionGenerator tabuSearchSolutionGenerator = new TabuSearchSolutionGenerator(distanceMatrix, new TSPSolution(new KRandomSolutionGenerator(1).solve(distanceMatrix), distanceMatrix), new NIterationsWithoutProgressStopCondition(1000), new AllSwapsNeighbourhoodGenerator(), new BestNonTabuNeighbourNeighbourhoodManager(), new StaticTabuTenureTabuListManager(14), null, new FrequentEdgePenaltyLongTermMemoryManager(true, 0.05), 1);
 
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
-
-        while(thread1.isAlive() || thread2.isAlive() || thread3.isAlive() || thread4.isAlive()) {
-
-        }
-
-        System.out.println("Global best: " + TabuSearchSolutionGenerator.getGlobalBestSolution().getObjectiveFunctionValue());
+        System.out.println("Global best: " + SolutionGenerator.objectiveFunction(tabuSearchSolutionGenerator.solve(distanceMatrix), distanceMatrix));
     }
 }

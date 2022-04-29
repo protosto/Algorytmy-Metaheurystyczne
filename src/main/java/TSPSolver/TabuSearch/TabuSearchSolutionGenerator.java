@@ -9,11 +9,16 @@ import TSPSolver.TabuSearch.StopCondition.StopCondition;
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.TabuListManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.*;
 
-public class TabuSearchSolutionGenerator extends Thread {
+public class TabuSearchSolutionGenerator extends SolutionGenerator implements Runnable{
     private volatile static TSPSolution globalBestSolution = null;
+    private volatile static ExecutorService executorService = Executors.newCachedThreadPool();
+    private volatile static List<Future<?>> futures = new ArrayList<>();
     private TSPSolution initialSolution;
     private StopCondition stopCondition;
     private NeighbourhoodGenerator neighbourhoodGenerator;
@@ -23,8 +28,20 @@ public class TabuSearchSolutionGenerator extends Thread {
     private LongTermMemoryManager longTermMemoryManager;
     private double[][] initialDistanceMatrix;
     private TSPSolution localBestSolution;
+    private Integer numberOfStartingThreads;
 
-    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager) {
+    public TabuSearchSolutionGenerator(TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
+        this.initialSolution = initialSolution;
+        this.stopCondition = stopCondition;
+        this.neighbourhoodGenerator = neighbourhoodGenerator;
+        this.neighbourhoodManager = neighbourhoodManager;
+        this.tabuListManager = tabuListManager;
+        this.intermediateTermMemoryManager = intermediateTermMemoryManager;
+        this.longTermMemoryManager = longTermMemoryManager;
+        this.numberOfStartingThreads = numberOfStartingThreads;
+    }
+
+    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
         this.initialDistanceMatrix = initialDistanceMatrix;
         this.initialSolution = initialSolution;
         this.stopCondition = stopCondition;
@@ -33,17 +50,42 @@ public class TabuSearchSolutionGenerator extends Thread {
         this.tabuListManager = tabuListManager;
         this.intermediateTermMemoryManager = intermediateTermMemoryManager;
         this.longTermMemoryManager = longTermMemoryManager;
+        this.numberOfStartingThreads = numberOfStartingThreads;
     }
 
-    public static TSPSolution getGlobalBestSolution() {
-        return globalBestSolution;
+    @Override
+    public List<Integer> solve(double[][] distanceTable) {
+        initialDistanceMatrix = distanceTable;
+
+        futures.add(executorService.submit(this));
+
+        for(int i = 1; i < numberOfStartingThreads; i++) {
+            futures.add(executorService.submit(this.copy(initialSolution)));
+        }
+
+        try{
+            while(!isFinished()) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        executorService.shutdownNow();
+
+        return globalBestSolution.getSolution();
     }
 
-    public static void setGlobalBestSolution(TSPSolution globalBestSolution) {
-        TabuSearchSolutionGenerator.globalBestSolution = globalBestSolution;
-    }
+    private synchronized boolean isFinished() {
+        boolean allDone = true;
 
-    public synchronized void solve() {
+        for(Future<?> future : futures){
+            allDone &= future.isDone();
+        }
+
+        return allDone;
+    }
+    private synchronized void runTabuSearch() {
         double[][] currentDistanceMatrix = Arrays.stream(initialDistanceMatrix).map(double[]::clone).toArray(double[][]::new);
         TSPSolution currentSolution = initialSolution;
         localBestSolution = currentSolution;
@@ -78,94 +120,45 @@ public class TabuSearchSolutionGenerator extends Thread {
 
             tabuListManager.addToTabuList(currentSolution, neighbourhood, stopCondition.getIterationNumber());
         }
-        while (!stopCondition.isStopped(currentSolution, localBestSolution));
+        while(!stopCondition.isStopped(currentSolution, localBestSolution));
     }
 
     @Override
     public void run() {
-        solve();
+        runTabuSearch();
         System.out.println("Local best: " + this.getLocalBestSolution().getObjectiveFunctionValue());
     }
 
     public void reset() {
         globalBestSolution = null;
+        localBestSolution = null;
+        intermediateTermMemoryManager.reset();
         stopCondition.reset();
         tabuListManager.reset();
+        executorService = Executors.newCachedThreadPool();
+        futures = new ArrayList<>();
+
     }
 
     public TabuSearchSolutionGenerator copy(TSPSolution initialSolution) {
-        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolution, stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null);
+        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolution, stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null, 0);
     }
-
-    public StopCondition getStopCondition() {
-        return stopCondition;
-    }
-
-    public void setStopCondition(StopCondition stopCondition) {
-        this.stopCondition = stopCondition;
-    }
-
-    public NeighbourhoodGenerator getNeighbourhoodGenerator() {
-        return neighbourhoodGenerator;
-    }
-
-    public void setNeighbourhoodGenerator(NeighbourhoodGenerator neighbourhoodGenerator) {
-        this.neighbourhoodGenerator = neighbourhoodGenerator;
-    }
-
-    public TabuListManager getTabuListManager() {
-        return tabuListManager;
-    }
-
-    public void setTabuListManager(TabuListManager tabuListManager) {
-        this.tabuListManager = tabuListManager;
-    }
-
-    public LongTermMemoryManager getLongTermMemoryManager() {
-        return longTermMemoryManager;
-    }
-
     public void setLongTermMemoryManager(LongTermMemoryManager longTermMemoryManager) {
         this.longTermMemoryManager = longTermMemoryManager;
     }
-
-    public double[][] getInitialDistanceMatrix() {
-        return initialDistanceMatrix;
-    }
-
-    public void setInitialDistanceMatrix(double[][] initialDistanceMatrix) {
-        this.initialDistanceMatrix = initialDistanceMatrix;
-    }
-
     public TSPSolution getLocalBestSolution() {
         return localBestSolution;
     }
-
-    public void setLocalBestSolution(TSPSolution localBestSolution) {
-        this.localBestSolution = localBestSolution;
-    }
-
-    public TSPSolution getInitialSolution() {
-        return initialSolution;
-    }
-
-    public void setInitialSolution(TSPSolution initialSolution) {
-        this.initialSolution = initialSolution;
-    }
-
-    public NeighbourhoodManager getNeighbourhoodManager() {
-        return neighbourhoodManager;
-    }
-
-    public void setNeighbourhoodManager(NeighbourhoodManager neighbourhoodManager) {
-        this.neighbourhoodManager = neighbourhoodManager;
-    }
-
-    public IntermediateTermMemoryManager getIntermediateTermMemoryManager() {
-        return intermediateTermMemoryManager;
-    }
-
     public void setIntermediateTermMemoryManager(IntermediateTermMemoryManager intermediateTermMemoryManager) {
         this.intermediateTermMemoryManager = intermediateTermMemoryManager;
     }
+
+    public static ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    public static List<Future<?>> getFutures() {
+        return futures;
+    }
+
 }

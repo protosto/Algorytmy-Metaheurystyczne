@@ -14,7 +14,7 @@ public class RestartOnPromisingAreaIntermediateMemoryManager implements Intermed
     }
 
     @Override
-    public void manage(TabuSearchSolutionGenerator tabuSearchSolutionGenerator, TSPSolution localBestSolution) {
+    public synchronized void manage(TabuSearchSolutionGenerator tabuSearchSolutionGenerator, TSPSolution localBestSolution) {
         if (this.localBestSolution == null) {
             this.localBestSolution = localBestSolution;
         } else if (this.localBestSolution.getObjectiveFunctionValue() >= localBestSolution.getObjectiveFunctionValue() * requiredImprovement) {
@@ -22,11 +22,15 @@ public class RestartOnPromisingAreaIntermediateMemoryManager implements Intermed
             copy.setIntermediateTermMemoryManager(null);
             copy.setLongTermMemoryManager(null);
 
-            Thread thread = new Thread(copy);
-            thread.start();
+            TabuSearchSolutionGenerator.getFutures().add(TabuSearchSolutionGenerator.getExecutorService().submit(copy));
 
             this.localBestSolution = localBestSolution;
         }
+    }
+
+    @Override
+    public void reset() {
+        localBestSolution = null;
     }
 
     @Override
