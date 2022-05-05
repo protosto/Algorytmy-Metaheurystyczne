@@ -2,20 +2,29 @@ package TSPSolver.TabuSearch.NeighbourhoodGenerator;
 
 import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.TreeSet;
 
 public class RandomVertexInsertionNeighbourhoodGenerator implements NeighbourhoodGenerator {
-  private int InsertionDistance = 4;
+  private int insertionDistance;
+
+  public RandomVertexInsertionNeighbourhoodGenerator(int insertionDistance) {
+      this.insertionDistance = insertionDistance;
+  }
   @Override
   public TreeSet<TSPSolution> generateNeighbourhood(TSPSolution currentSolution, double[][] distanceMatrix) {
     TreeSet<TSPSolution> neighbourhood = new TreeSet<>();
 
-    for (int i = 0; i < currentSolution.getSolution().size() - 1; i++) {
-        int rotate = (int) (Math.random()*InsertionDistance+1);
-        Collections.rotate(currentSolution.getSolution().subList(i,i+rotate), rotate);
+    for (int i = 0; i < currentSolution.getSolution().size() - 1 - insertionDistance; i++) {
+        int distance = (int) (Math.random() * insertionDistance + 1);
+
+        Integer temp = currentSolution.getSolution().remove(i);
+        currentSolution.getSolution().add((i + distance > currentSolution.getSolution().size() - 1 ? currentSolution.getSolution().size() - 1 : i + distance), temp);
         TSPSolution neighbour = new TSPSolution(currentSolution.getSolution(), distanceMatrix);
-        Collections.rotate(currentSolution.getSolution().subList(i,i+rotate), 1);
+        temp = currentSolution.getSolution().remove((i + distance > currentSolution.getSolution().size() - 1 ? currentSolution.getSolution().size() - 1 : i + distance));
+        currentSolution.getSolution().add(i, temp);
+
 
         neighbourhood.add(neighbour);
     }
@@ -25,8 +34,8 @@ public class RandomVertexInsertionNeighbourhoodGenerator implements Neighbourhoo
 
   @Override
   public NeighbourhoodGenerator copy() {
-    return new RandomVertexInsertionNeighbourhoodGenerator();
+    return new RandomVertexInsertionNeighbourhoodGenerator(insertionDistance);
   }
 
-  public void ChangeInsertionDistance(int NewInsertionDistance){ this.InsertionDistance = NewInsertionDistance;}
+  public void setInsertionDistance(int insertionDistance){ this.insertionDistance = insertionDistance;}
 }

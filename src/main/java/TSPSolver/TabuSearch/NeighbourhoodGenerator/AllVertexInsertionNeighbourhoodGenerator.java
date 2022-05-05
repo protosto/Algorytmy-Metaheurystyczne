@@ -11,11 +11,16 @@ public class AllVertexInsertionNeighbourhoodGenerator implements NeighbourhoodGe
     TreeSet<TSPSolution> neighbourhood = new TreeSet<>();
 
     for (int i = 0; i < currentSolution.getSolution().size() - 1; i++) {
-      for( int j = i+1; j < currentSolution.getSolution().size() - 1; j++ ){
+      for(int j = 0; j < currentSolution.getSolution().size() - 1; j++ ){
+        if(i == j) {
+          continue;
+        }
 
-        Collections.rotate(currentSolution.getSolution().subList(i,i+j), j);
+        Integer temp = currentSolution.getSolution().remove(i);
+        currentSolution.getSolution().add(j, temp);
         TSPSolution neighbour = new TSPSolution(currentSolution.getSolution(), distanceMatrix);
-        Collections.rotate(currentSolution.getSolution().subList(i,i+j), 1);
+        temp = currentSolution.getSolution().remove(j);
+        currentSolution.getSolution().add(i, temp);
 
         neighbourhood.add(neighbour);
       }

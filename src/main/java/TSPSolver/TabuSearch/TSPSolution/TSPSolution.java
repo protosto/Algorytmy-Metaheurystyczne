@@ -53,6 +53,10 @@ public class TSPSolution implements Comparable {
         return solution.hashCode();
     }
 
+    public TSPSolution copy() {
+        return new TSPSolution(solution, distanceMatrix, objectiveFunctionValue);
+    }
+
     public void updateObjectiveFunctionValue() {
         this.objectiveFunctionValue = SolutionGenerator.objectiveFunction(this.solution, distanceMatrix);
     }

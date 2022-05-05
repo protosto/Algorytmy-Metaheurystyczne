@@ -1,5 +1,6 @@
 package TSPSolver.TabuSearch;
 
+import TSPGenerator.TSPGenerator;
 import TSPSolver.SolutionGenerator;
 import TSPSolver.TabuSearch.IntermediateTermMemoryManager.IntermediateTermMemoryManager;
 import TSPSolver.TabuSearch.LongTermMemoryManager.LongTermMemoryManager;
@@ -29,9 +30,10 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
     private double[][] initialDistanceMatrix;
     private TSPSolution localBestSolution;
     private Integer numberOfStartingThreads;
+    private SolutionGenerator initialSolutionGenerator = null;
 
-    public TabuSearchSolutionGenerator(TSPSolution initialSolution, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
-        this.initialSolution = initialSolution;
+    public TabuSearchSolutionGenerator(SolutionGenerator initialSolutionGenerator, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
+        this.initialSolutionGenerator = initialSolutionGenerator;
         this.stopCondition = stopCondition;
         this.neighbourhoodGenerator = neighbourhoodGenerator;
         this.neighbourhoodManager = neighbourhoodManager;
@@ -53,6 +55,28 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
         this.numberOfStartingThreads = numberOfStartingThreads;
     }
 
+    public TabuSearchSolutionGenerator(double[][] initialDistanceMatrix, SolutionGenerator initialSolutionGenerator, StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
+        this.initialDistanceMatrix = initialDistanceMatrix;
+        this.initialSolutionGenerator = initialSolutionGenerator;
+        this.stopCondition = stopCondition;
+        this.neighbourhoodGenerator = neighbourhoodGenerator;
+        this.neighbourhoodManager = neighbourhoodManager;
+        this.tabuListManager = tabuListManager;
+        this.intermediateTermMemoryManager = intermediateTermMemoryManager;
+        this.longTermMemoryManager = longTermMemoryManager;
+        this.numberOfStartingThreads = numberOfStartingThreads;
+    }
+
+    public TabuSearchSolutionGenerator(StopCondition stopCondition, NeighbourhoodGenerator neighbourhoodGenerator, NeighbourhoodManager neighbourhoodManager, TabuListManager tabuListManager, IntermediateTermMemoryManager intermediateTermMemoryManager, LongTermMemoryManager longTermMemoryManager, Integer numberOfStartingThreads) {
+        this.stopCondition = stopCondition;
+        this.neighbourhoodGenerator = neighbourhoodGenerator;
+        this.neighbourhoodManager = neighbourhoodManager;
+        this.tabuListManager = tabuListManager;
+        this.intermediateTermMemoryManager = intermediateTermMemoryManager;
+        this.longTermMemoryManager = longTermMemoryManager;
+        this.numberOfStartingThreads = numberOfStartingThreads;
+    }
+
     @Override
     public TSPSolution solve(double[][] distanceTable) {
         initialDistanceMatrix = distanceTable;
@@ -60,7 +84,7 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
         futures.add(executorService.submit(this));
 
         for(int i = 1; i < numberOfStartingThreads; i++) {
-            futures.add(executorService.submit(this.copy(initialSolution)));
+            futures.add(executorService.submit(this.copy()));
         }
 
         try{
@@ -73,7 +97,10 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
 
         executorService.shutdownNow();
 
-        return globalBestSolution;
+        TSPSolution returnedSolution = globalBestSolution;
+        reset();
+
+        return returnedSolution;
     }
 
     private synchronized boolean isFinished() {
@@ -86,15 +113,19 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
         return allDone;
     }
     private synchronized void runTabuSearch() {
+        if(initialSolutionGenerator != null) {
+            initialSolution = initialSolutionGenerator.solve(initialDistanceMatrix);
+        }
+
         double[][] currentDistanceMatrix = Arrays.stream(initialDistanceMatrix).map(double[]::clone).toArray(double[][]::new);
         TSPSolution currentSolution = initialSolution;
         localBestSolution = currentSolution;
 
+        //System.out.println("Start solution: " + this.getLocalBestSolution().getObjectiveFunctionValue());
+
         if (globalBestSolution == null || globalBestSolution.getObjectiveFunctionValue() > currentSolution.getObjectiveFunctionValue()) {
             globalBestSolution = currentSolution;
         }
-
-        System.out.println(SolutionGenerator.objectiveFunction(currentSolution.getSolution(), initialDistanceMatrix));
 
         do {
             TreeSet<TSPSolution> neighbourhood = neighbourhoodGenerator.generateNeighbourhood(currentSolution, currentDistanceMatrix);
@@ -126,13 +157,17 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
     @Override
     public void run() {
         runTabuSearch();
-        System.out.println("Local best: " + this.getLocalBestSolution().getObjectiveFunctionValue());
+        //System.out.println("Local best: " + this.getLocalBestSolution().getObjectiveFunctionValue());
     }
 
     public void reset() {
         globalBestSolution = null;
         localBestSolution = null;
-        intermediateTermMemoryManager.reset();
+
+        if(intermediateTermMemoryManager != null) {
+            intermediateTermMemoryManager.reset();
+        }
+
         stopCondition.reset();
         tabuListManager.reset();
         executorService = Executors.newCachedThreadPool();
@@ -141,7 +176,11 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
     }
 
     public TabuSearchSolutionGenerator copy(TSPSolution initialSolution) {
-        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolution, stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null, 0);
+        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolution.copy(), stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null, 0);
+    }
+
+    public TabuSearchSolutionGenerator copy() {
+        return new TabuSearchSolutionGenerator(initialDistanceMatrix, initialSolutionGenerator, stopCondition.copy(), neighbourhoodGenerator.copy(), neighbourhoodManager.copy(), tabuListManager.copy(), intermediateTermMemoryManager != null ? intermediateTermMemoryManager.copy() : null, longTermMemoryManager != null ? longTermMemoryManager.copy() : null, 0);
     }
     public void setLongTermMemoryManager(LongTermMemoryManager longTermMemoryManager) {
         this.longTermMemoryManager = longTermMemoryManager;
@@ -161,4 +200,23 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
         return futures;
     }
 
+    public TabuListManager getTabuListManager() {
+        return tabuListManager;
+    }
+
+    public void setInitialSolution(TSPSolution initialSolution) {
+        this.initialSolution = initialSolution;
+    }
+
+    public LongTermMemoryManager getLongTermMemoryManager() {
+        return longTermMemoryManager;
+    }
+
+    public void setNumberOfStartingThreads(Integer numberOfStartingThreads) {
+        this.numberOfStartingThreads = numberOfStartingThreads;
+    }
+
+    public void setInitialDistanceMatrix(double[][] initialDistanceMatrix) {
+        this.initialDistanceMatrix = initialDistanceMatrix;
+    }
 }

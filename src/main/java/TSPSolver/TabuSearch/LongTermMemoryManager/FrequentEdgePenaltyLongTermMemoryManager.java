@@ -31,4 +31,8 @@ public class FrequentEdgePenaltyLongTermMemoryManager implements LongTermMemoryM
     public LongTermMemoryManager copy() {
         return new FrequentEdgePenaltyLongTermMemoryManager(isSymmetrical, penaltyValue);
     }
+
+    public void setPenaltyValue(double penaltyValue) {
+        this.penaltyValue = penaltyValue;
+    }
 }
