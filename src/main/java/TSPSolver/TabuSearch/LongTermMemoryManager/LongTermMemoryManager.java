@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.LongTermMemoryManager;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.util.TreeSet;
 

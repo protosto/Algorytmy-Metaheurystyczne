@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.StopCondition;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 public class NMillisecondsStopCondition extends StopCondition {
     private Long N;

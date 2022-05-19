@@ -2,12 +2,10 @@ package TSPSolver.TabuSearch.TSPTest;
 
 import TSPGenerator.TSPGenerator;
 import TSPSolver.KRandomSolutionGenerator;
-import TSPSolver.TabuSearch.IntermediateTermMemoryManager.RestartOnPromisingAreaIntermediateMemoryManager;
-import TSPSolver.TabuSearch.LongTermMemoryManager.FrequentEdgePenaltyLongTermMemoryManager;
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.BestNonTabuNeighbourNeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.NIterationsWithoutProgressStopCondition;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.StaticTabuTenureTabuListManager;
 import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
 

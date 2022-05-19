@@ -1,9 +1,7 @@
 package TSPSolver.TabuSearch.IntermediateTermMemoryManager;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
-
-import java.util.TreeSet;
 
 public class RestartOnPromisingAreaIntermediateMemoryManager implements IntermediateTermMemoryManager {
     private final double requiredImprovement;

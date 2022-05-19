@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.NeighbourhoodGenerator;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.util.Collections;
 import java.util.TreeSet;

@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.StopCondition;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 public class NIterationsStopCondition extends StopCondition {
     private Integer N;

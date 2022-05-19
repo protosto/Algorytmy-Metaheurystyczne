@@ -7,7 +7,7 @@ import TSPSolver.TabuSearch.LongTermMemoryManager.FrequentEdgePenaltyLongTermMem
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.BestNonTabuNeighbourNeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.NIterationsWithoutProgressStopCondition;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.StaticTabuTenureTabuListManager;
 import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
 

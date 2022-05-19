@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.NeighbourhoodManager;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.TabuListManager;
 
 import java.util.TreeSet;

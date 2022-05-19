@@ -1,22 +1,18 @@
 package TSPSolver.TabuSearch.TSPTest;
 
 import TSPGenerator.TSPGenerator;
-import TSPSolver.ExtendedClosestNeighbourMethod;
 import TSPSolver.KRandomSolutionGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.BestNonTabuNeighbourNeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.NIterationsWithoutProgressStopCondition;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.StaticTabuTenureTabuListManager;
 import TSPSolver.TabuSearch.TabuSearchSolutionGenerator;
-import TSPSolver.TwoOptSolutionGenerator;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TSPTabuTenureTests {
     private String path;

@@ -1,13 +1,12 @@
 package TSPSolver.TabuSearch;
 
-import TSPGenerator.TSPGenerator;
 import TSPSolver.SolutionGenerator;
 import TSPSolver.TabuSearch.IntermediateTermMemoryManager.IntermediateTermMemoryManager;
 import TSPSolver.TabuSearch.LongTermMemoryManager.LongTermMemoryManager;
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.NeighbourhoodGenerator;
 import TSPSolver.TabuSearch.NeighbourhoodManager.NeighbourhoodManager;
 import TSPSolver.TabuSearch.StopCondition.StopCondition;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 import TSPSolver.TabuSearch.TabuListManager.TabuListManager;
 
 import java.util.ArrayList;
@@ -78,8 +77,8 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
     }
 
     @Override
-    public TSPSolution solve(double[][] distanceTable) {
-        initialDistanceMatrix = distanceTable;
+    public TSPSolution solve(double[][] distanceMatrix) {
+        initialDistanceMatrix = distanceMatrix;
 
         futures.add(executorService.submit(this));
 

@@ -1,10 +1,8 @@
 package TSPSolver;
 
 import TSPSolver.TabuSearch.NeighbourhoodGenerator.AllSwapsNeighbourhoodGenerator;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.TreeSet;
 
 public class TwoOptSolutionGenerator extends SolutionGenerator {

@@ -2,7 +2,7 @@ package TSPSolver.TabuSearch.TSPTest;
 
 import TSPGenerator.TSPGenerator;
 import TSPSolver.SolutionGenerator;
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.io.BufferedWriter;
 import java.io.File;

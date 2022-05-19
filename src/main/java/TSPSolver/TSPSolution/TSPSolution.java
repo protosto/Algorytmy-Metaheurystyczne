@@ -1,4 +1,4 @@
-package TSPSolver.TabuSearch.TSPSolution;
+package TSPSolver.TSPSolution;
 
 import TSPSolver.SolutionGenerator;
 

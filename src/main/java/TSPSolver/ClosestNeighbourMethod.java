@@ -1,6 +1,6 @@
 package TSPSolver;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.util.ArrayList;
 import java.util.List;

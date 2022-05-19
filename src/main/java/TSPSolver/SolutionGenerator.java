@@ -1,6 +1,6 @@
 package TSPSolver;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.util.List;
 
@@ -20,6 +20,6 @@ public abstract class SolutionGenerator {
         return objectiveFunctionValue;
     }
 
-    public abstract TSPSolution solve(double[][] distanceTable);
+    public abstract TSPSolution solve(double[][] distanceMatrix);
 }
 

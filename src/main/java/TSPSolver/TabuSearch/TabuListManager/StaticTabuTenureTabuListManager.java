@@ -1,6 +1,6 @@
 package TSPSolver.TabuSearch.TabuListManager;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
 import java.util.HashMap;
 import java.util.TreeSet;

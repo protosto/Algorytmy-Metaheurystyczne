@@ -1,9 +1,7 @@
 package TSPSolver.TabuSearch.NeighbourhoodGenerator;
 
-import TSPSolver.TabuSearch.TSPSolution.TSPSolution;
+import TSPSolver.TSPSolution.TSPSolution;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.TreeSet;
 
 public class RandomVertexInsertionNeighbourhoodGenerator implements NeighbourhoodGenerator {
