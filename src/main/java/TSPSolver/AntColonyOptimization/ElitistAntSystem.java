@@ -1,95 +1,158 @@
 package TSPSolver.AntColonyOptimization;
 
-import TSPSolver.ClosestNeighbourMethod;
 import TSPSolver.SolutionGenerator;
 import TSPSolver.TSPSolution.TSPSolution;
+import TSPSolver.TwoOptSolutionGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.*;
 
 public class ElitistAntSystem extends SolutionGenerator {
-    private TSPSolution globalBestSolution;
-    private double pheromoneEvaporationCoefficient;
+    private static final int numberOfThreads = 8;
+    private volatile static ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+    private int numberOfAntsPerIteration;
+    private double globalPheromoneEvaporationCoefficient;
+    private double localPheromoneEvaporationCoefficient;
+    private double startPheromoneValue;
+    private double exploitationProbability;
+    private int numberOfIterations;
     private double alpha;
     private double beta;
     private double Q;
+    private boolean isSymmetrical;
+    private boolean localSearch;
 
-    public ElitistAntSystem(double pheromoneEvaporationCoefficient, double alpha, double beta, double q) {
-        this.pheromoneEvaporationCoefficient = pheromoneEvaporationCoefficient;
+    public ElitistAntSystem(int numberOfAntsPerIteration, double pheromoneEvaporationCoefficient, double globalPheromoneEvaporationCoefficient, double localPheromoneEvaporationCoefficient, double startPheromoneValue, int numberOfIterations, double alpha, double beta, double Q, boolean isSymmetrical, boolean localSearch) {
+        this.numberOfAntsPerIteration = numberOfAntsPerIteration;
+        this.globalPheromoneEvaporationCoefficient = globalPheromoneEvaporationCoefficient;
+        this.localPheromoneEvaporationCoefficient = localPheromoneEvaporationCoefficient;
+        this.startPheromoneValue = startPheromoneValue;
+        this.exploitationProbability = 0;
+        this.numberOfIterations = numberOfIterations;
         this.alpha = alpha;
         this.beta = beta;
-        Q = q;
+        this.isSymmetrical = isSymmetrical;
+        this.Q = Q;
+        this.localSearch = localSearch;
     }
 
     @Override
     public TSPSolution solve(double[][] distanceMatrix) {
-        globalBestSolution = new TSPSolution();
+        TSPSolution globalBestSolution = new TSPSolution();
         double[][] pheromoneMatrix = new double[distanceMatrix.length][distanceMatrix.length];
 
         for(int i = 0; i < distanceMatrix.length; i++) {
             for(int j = 0; j < distanceMatrix.length; j++) {
-                pheromoneMatrix[i][j] = 1;
+                pheromoneMatrix[i][j] = startPheromoneValue;
             }
         }
 
-        for(int i = 0; i < 100; i++) {
-            List<TSPSolution> tspSolutionList = sendAnts(distanceMatrix, pheromoneMatrix);
-            updatePheromoneMatrix(pheromoneMatrix, tspSolutionList);
+        for(int i = 0; i < numberOfIterations; i++) {
+            TSPSolution localBestSolution = sendAnts(distanceMatrix, pheromoneMatrix);
+            globalPheromoneUpdate(pheromoneMatrix, localBestSolution);
+
+            if(localBestSolution.getObjectiveFunctionValue() < globalBestSolution.getObjectiveFunctionValue()) {
+                globalBestSolution = localBestSolution;
+            }
+
+            System.out.println(i + " " + globalBestSolution.getObjectiveFunctionValue());
         }
+
+        executorService.shutdownNow();
+        executorService = Executors.newFixedThreadPool(numberOfThreads);
 
         return globalBestSolution;
     }
 
-    private void updatePheromoneMatrix(double[][] pheromoneMatrix, List<TSPSolution> tspSolutionList) {
-        for(int i = 0; i < tspSolutionList.get(0).getSolution().size(); i++) {
-            for(int j = 0; j < tspSolutionList.get(0).getSolution().size(); j++) {
-                pheromoneMatrix[i][j] *= (1.0 - pheromoneEvaporationCoefficient);
+    private void globalPheromoneUpdate(double[][] pheromoneMatrix, TSPSolution tspSolution) {
+        for(int i = 0; i < tspSolution.getSolution().size(); i++) {
+            for(int j = 0; j < tspSolution.getSolution().size(); j++) {
+                pheromoneMatrix[i][j] *= (1.0 - globalPheromoneEvaporationCoefficient);
             }
         }
 
-        for(TSPSolution tspSolution : tspSolutionList) {
-            for(int i = 1; i < tspSolution.getSolution().size(); i++) {
-                pheromoneMatrix[i - 1][i] += (Q / tspSolution.getObjectiveFunctionValue());
-            }
+        for(int i = 1; i < tspSolution.getSolution().size(); i++) {
+            pheromoneMatrix[i - 1][i] += (Q / tspSolution.getObjectiveFunctionValue());
 
+            if(isSymmetrical) {
+                pheromoneMatrix[i][i - 1] += (Q / tspSolution.getObjectiveFunctionValue());
+            }
+        }
+
+        pheromoneMatrix[tspSolution.getSolution().size() - 1][0] += (Q / tspSolution.getObjectiveFunctionValue());
+
+        if(isSymmetrical) {
             pheromoneMatrix[0][tspSolution.getSolution().size() - 1] += (Q / tspSolution.getObjectiveFunctionValue());
         }
     }
+  
+    private TSPSolution sendAnts(double[][] distanceMatrix, double[][] pheromoneMatrix) {
+        List<Ant> antList = new ArrayList<>();
+        List<Future<?>> futures = new ArrayList<>();
+        TSPSolution localBestSolution = new TSPSolution();
 
-    private List<TSPSolution> sendAnts(double[][] distanceMatrix, double[][] pheromoneMatrix) {
-        List<TSPSolution> tspSolutionList = new ArrayList<>();
-
-        for(int i = 0; i < distanceMatrix.length; i++) {
-            TSPSolution tspSolution = new Ant().travel(i, pheromoneMatrix, distanceMatrix, alpha, beta);
-
-            if(tspSolution.getObjectiveFunctionValue() < globalBestSolution.getObjectiveFunctionValue()) {
-                globalBestSolution = tspSolution;
-            }
-
-            tspSolutionList.add(tspSolution);
+        for(int i = 0; i < numberOfAntsPerIteration; i++) {
+            Ant ant = new Ant((int) (Math.random() * distanceMatrix.length), localPheromoneEvaporationCoefficient, pheromoneMatrix, distanceMatrix, startPheromoneValue, exploitationProbability, alpha, beta, isSymmetrical);
+            futures.add(executorService.submit(ant));
+            antList.add(ant);
         }
 
-        return tspSolutionList;
+        try {
+            while(!isFinished(futures)) {
+                Thread.sleep(100);
+            }
+        }
+        catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        //checkForExceptions(futures);
+
+        for(Ant ant : antList) {
+            TSPSolution tspSolution = (localSearch ? new TwoOptSolutionGenerator(ant.getTspSolution()).solve(distanceMatrix) : ant.getTspSolution());
+
+            if(localBestSolution.getObjectiveFunctionValue() > tspSolution.getObjectiveFunctionValue()) {
+                localBestSolution = tspSolution;
+            }
+        }
+
+        return localBestSolution;
     }
 
-    public void setPheromoneEvaporationCoefficient(double pheromoneEvaporationCoefficient) {
-        this.pheromoneEvaporationCoefficient = pheromoneEvaporationCoefficient;
+    private boolean isFinished(List<Future<?>> futures) {
+        boolean allDone = true;
+
+        for(Future<?> future : futures){
+            allDone &= future.isDone();
+        }
+
+        return allDone;
     }
 
-    public void setGlobalBestSolution( double[][] distanceMatrix, Integer startingPoint ){
-        globalBestSolution = ClosestNeighbourMethod.solveFor( distanceMatrix, startingPoint);
+    private void checkForExceptions(List<Future<?>> futures) {
+        Throwable throwable = null;
+
+        for(Future future : futures) {
+            try {
+                if(future.isDone()) {
+                    future.get();
+                }
+            }
+            catch(CancellationException cancellationException) {
+                throwable = cancellationException;
+            }
+            catch(ExecutionException executionException) {
+                throwable = executionException.getCause();
+            }
+            catch(InterruptedException interruptedException) {
+                Thread.currentThread().interrupt();
+            }
+
+            if (throwable != null) {
+                System.out.println(throwable);
+            }
+        }
     }
 
-    public void setAlpha(double alpha) {
-        this.alpha = alpha;
-    }
-
-    public void setBeta(double beta) {
-        this.beta = beta;
-    }
-
-    public void setQ(double q) {
-        Q = q;
-    }
 }
