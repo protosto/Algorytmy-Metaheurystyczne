@@ -50,6 +50,7 @@ public class ElitistAntSystem extends SolutionGenerator {
 
         for(int i = 0; i < numberOfIterations; i++) {
             TSPSolution localBestSolution = sendAnts(distanceMatrix, pheromoneMatrix);
+            elitistUpdate(globalBestSolution, pheromoneMatrix);
             globalPheromoneUpdate(pheromoneMatrix, localBestSolution);
 
             if(localBestSolution.getObjectiveFunctionValue() < globalBestSolution.getObjectiveFunctionValue()) {
