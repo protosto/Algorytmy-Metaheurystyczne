@@ -23,12 +23,12 @@ public class ElitistAntSystem extends SolutionGenerator {
     private boolean isSymmetrical;
     private boolean localSearch;
 
-    public ElitistAntSystem(int numberOfAntsPerIteration, double pheromoneEvaporationCoefficient, double globalPheromoneEvaporationCoefficient, double localPheromoneEvaporationCoefficient, double startPheromoneValue, int numberOfIterations, double alpha, double beta, double Q, boolean isSymmetrical, boolean localSearch) {
+    public ElitistAntSystem(int numberOfAntsPerIteration, double globalPheromoneEvaporationCoefficient, double localPheromoneEvaporationCoefficient, double startPheromoneValue, double exploitationProbability, int numberOfIterations, double alpha, double beta, double Q, boolean isSymmetrical, boolean localSearch) {
         this.numberOfAntsPerIteration = numberOfAntsPerIteration;
         this.globalPheromoneEvaporationCoefficient = globalPheromoneEvaporationCoefficient;
         this.localPheromoneEvaporationCoefficient = localPheromoneEvaporationCoefficient;
         this.startPheromoneValue = startPheromoneValue;
-        this.exploitationProbability = 0;
+        this.exploitationProbability = exploitationProbability;
         this.numberOfIterations = numberOfIterations;
         this.alpha = alpha;
         this.beta = beta;
@@ -86,14 +86,16 @@ public class ElitistAntSystem extends SolutionGenerator {
             pheromoneMatrix[0][tspSolution.getSolution().size() - 1] += (Q / tspSolution.getObjectiveFunctionValue());
         }
     }
-  
+
     private TSPSolution sendAnts(double[][] distanceMatrix, double[][] pheromoneMatrix) {
         List<Ant> antList = new ArrayList<>();
         List<Future<?>> futures = new ArrayList<>();
         TSPSolution localBestSolution = new TSPSolution();
+        int [] permutation = randomPermutation(distanceMatrix.length, numberOfAntsPerIteration);
 
         for(int i = 0; i < numberOfAntsPerIteration; i++) {
-            Ant ant = new Ant((int) (Math.random() * distanceMatrix.length), localPheromoneEvaporationCoefficient, pheromoneMatrix, distanceMatrix, startPheromoneValue, exploitationProbability, alpha, beta, isSymmetrical);
+
+            Ant ant = new Ant( permutation[i], localPheromoneEvaporationCoefficient, pheromoneMatrix, distanceMatrix, startPheromoneValue, exploitationProbability, alpha, beta, isSymmetrical);
             futures.add(executorService.submit(ant));
             antList.add(ant);
         }
@@ -107,7 +109,7 @@ public class ElitistAntSystem extends SolutionGenerator {
             throw new RuntimeException(e);
         }
 
-        //checkForExceptions(futures);
+        checkForExceptions(futures);
 
         for(Ant ant : antList) {
             TSPSolution tspSolution = (localSearch ? new TwoOptSolutionGenerator(ant.getTspSolution()).solve(distanceMatrix) : ant.getTspSolution());
@@ -152,6 +154,45 @@ public class ElitistAntSystem extends SolutionGenerator {
             if (throwable != null) {
                 System.out.println(throwable);
             }
+        }
+    }
+
+    // to bylo mozna duzo ogolniej napisac ale na potrzeby heurystyki starcza
+    private int[] randomPermutation( int tabsize, int permutationsize ){
+        int[] tab = new int[tabsize];
+        int[] out = new int[permutationsize];
+        int variable;
+        int swap;
+
+        for( int i = 0; i < tabsize; i++) tab[i] = i;
+
+        for( int i = 0; i < permutationsize; i++ ){
+            variable = ((int) (Math.random() * (tabsize-i)))+ i;
+            swap = tab[i];
+            tab[i] = tab[variable];
+            tab[variable] = swap;
+            out[i] = tab[i];
+        }
+        return out;
+    }
+
+    private void elitistUpdate( TSPSolution globalBestSolution, double[][] pheromoneMatrix ){
+        for( int i = 0; i < globalBestSolution.getSolution().size()-1; i++ ){
+            pheromoneMatrix[i][i+1] *= (1.0 - localPheromoneEvaporationCoefficient);
+            pheromoneMatrix[i][i+1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+
+            if(isSymmetrical) {
+                pheromoneMatrix[i+1][i] *= (1.0 - localPheromoneEvaporationCoefficient);
+                pheromoneMatrix[i+1][i] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+            }
+        }
+
+        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] *= (1.0 - localPheromoneEvaporationCoefficient);
+        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+
+        if(isSymmetrical) {
+            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] *= (1.0 - localPheromoneEvaporationCoefficient);
+            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
         }
     }
 
