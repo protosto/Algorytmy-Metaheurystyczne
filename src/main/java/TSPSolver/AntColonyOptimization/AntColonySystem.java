@@ -92,10 +92,18 @@ public class AntColonySystem extends SolutionGenerator {
         List<Future<?>> futures = new ArrayList<>();
         TSPSolution localBestSolution = new TSPSolution();
 
+        List<Integer> nodesLeft = new ArrayList<>();
+
+        for (int i = 0; i < distanceMatrix.length; i++) {
+            nodesLeft.add(i);
+        }
+
         for(int i = 0; i < numberOfAntsPerIteration; i++) {
-            Ant ant = new Ant((int) (Math.random() * distanceMatrix.length), localPheromoneEvaporationCoefficient, pheromoneMatrix, distanceMatrix, startPheromoneValue, exploitationProbability, alpha, beta, isSymmetrical);
+            int random = (int) (Math.random() * nodesLeft.size());
+            Ant ant = new Ant(nodesLeft.get(random), localPheromoneEvaporationCoefficient, pheromoneMatrix, distanceMatrix, startPheromoneValue, exploitationProbability, alpha, beta, isSymmetrical);
             futures.add(executorService.submit(ant));
             antList.add(ant);
+            nodesLeft.remove(random);
         }
 
         try {
