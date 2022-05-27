@@ -22,8 +22,9 @@ public class AntColonySystem extends SolutionGenerator {
     private double Q;
     private boolean isSymmetrical;
     private boolean localSearch;
+    private boolean elitist;
 
-    public AntColonySystem(int numberOfAntsPerIteration, double globalPheromoneEvaporationCoefficient, double localPheromoneEvaporationCoefficient, double startPheromoneValue, double exploitationProbability, int numberOfIterations, double alpha, double beta, double Q, boolean isSymmetrical, boolean localSearch) {
+    public AntColonySystem(int numberOfAntsPerIteration, double globalPheromoneEvaporationCoefficient, double localPheromoneEvaporationCoefficient, double startPheromoneValue, double exploitationProbability, int numberOfIterations, double alpha, double beta, double Q, boolean isSymmetrical, boolean localSearch, boolean elitist) {
         this.numberOfAntsPerIteration = numberOfAntsPerIteration;
         this.globalPheromoneEvaporationCoefficient = globalPheromoneEvaporationCoefficient;
         this.localPheromoneEvaporationCoefficient = localPheromoneEvaporationCoefficient;
@@ -35,6 +36,7 @@ public class AntColonySystem extends SolutionGenerator {
         this.isSymmetrical = isSymmetrical;
         this.Q = Q;
         this.localSearch = localSearch;
+        this.elitist = elitist;
     }
 
     @Override
@@ -54,6 +56,10 @@ public class AntColonySystem extends SolutionGenerator {
 
             if(localBestSolution.getObjectiveFunctionValue() < globalBestSolution.getObjectiveFunctionValue()) {
                 globalBestSolution = localBestSolution;
+            }
+
+            if(elitist) {
+                elitistUpdate(globalBestSolution, pheromoneMatrix);
             }
 
             System.out.println(i + " " + globalBestSolution.getObjectiveFunctionValue());
@@ -126,6 +132,26 @@ public class AntColonySystem extends SolutionGenerator {
         }
 
         return localBestSolution;
+    }
+
+    private void elitistUpdate(TSPSolution globalBestSolution, double[][] pheromoneMatrix) {
+        for( int i = 0; i < globalBestSolution.getSolution().size()-1; i++ ){
+            pheromoneMatrix[i][i+1] *= (1.0 - localPheromoneEvaporationCoefficient);
+            pheromoneMatrix[i][i+1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+
+            if(isSymmetrical) {
+                pheromoneMatrix[i+1][i] *= (1.0 - localPheromoneEvaporationCoefficient);
+                pheromoneMatrix[i+1][i] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+            }
+        }
+
+        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] *= (1.0 - localPheromoneEvaporationCoefficient);
+        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+
+        if(isSymmetrical) {
+            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] *= (1.0 - localPheromoneEvaporationCoefficient);
+            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+        }
     }
 
     private boolean isFinished(List<Future<?>> futures) {
