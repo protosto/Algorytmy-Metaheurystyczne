@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class AntColonySystem extends SolutionGenerator {
-    private static final int numberOfThreads = 8;
-    private volatile static ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+    private static final int numberOfThreads = 6;
+    private volatile static ThreadPoolExecutor executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(numberOfThreads);
     private int numberOfAntsPerIteration;
     private double globalPheromoneEvaporationCoefficient;
     private double localPheromoneEvaporationCoefficient;
@@ -66,7 +66,7 @@ public class AntColonySystem extends SolutionGenerator {
         }
 
         executorService.shutdownNow();
-        executorService = Executors.newFixedThreadPool(numberOfThreads);
+        executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(numberOfThreads);
 
         return globalBestSolution;
     }
@@ -114,7 +114,7 @@ public class AntColonySystem extends SolutionGenerator {
 
         try {
             while(!isFinished(futures)) {
-                Thread.sleep(100);
+                Thread.sleep(1);
             }
         }
         catch(InterruptedException e) {
@@ -135,22 +135,18 @@ public class AntColonySystem extends SolutionGenerator {
     }
 
     private void elitistUpdate(TSPSolution globalBestSolution, double[][] pheromoneMatrix) {
-        for( int i = 0; i < globalBestSolution.getSolution().size()-1; i++ ){
-            pheromoneMatrix[i][i+1] *= (1.0 - localPheromoneEvaporationCoefficient);
-            pheromoneMatrix[i][i+1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+        for(int i = 0; i < globalBestSolution.getSolution().size()-1; i++) {
+            pheromoneMatrix[i][i+1] += (Q / globalBestSolution.getObjectiveFunctionValue());
 
             if(isSymmetrical) {
-                pheromoneMatrix[i+1][i] *= (1.0 - localPheromoneEvaporationCoefficient);
-                pheromoneMatrix[i+1][i] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+                pheromoneMatrix[i+1][i] += (Q / globalBestSolution.getObjectiveFunctionValue());
             }
         }
 
-        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] *= (1.0 - localPheromoneEvaporationCoefficient);
-        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+        pheromoneMatrix[globalBestSolution.getSolution().size()-1][0] += (Q / globalBestSolution.getObjectiveFunctionValue());
 
         if(isSymmetrical) {
-            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] *= (1.0 - localPheromoneEvaporationCoefficient);
-            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] += localPheromoneEvaporationCoefficient * startPheromoneValue;
+            pheromoneMatrix[0][globalBestSolution.getSolution().size()-1] += (Q / globalBestSolution.getObjectiveFunctionValue());
         }
     }
 

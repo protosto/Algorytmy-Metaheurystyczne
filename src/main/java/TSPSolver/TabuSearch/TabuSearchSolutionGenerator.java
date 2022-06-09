@@ -88,7 +88,7 @@ public class TabuSearchSolutionGenerator extends SolutionGenerator implements Ru
 
         try{
             while(!isFinished()) {
-                Thread.sleep(100);
+                Thread.sleep(1);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

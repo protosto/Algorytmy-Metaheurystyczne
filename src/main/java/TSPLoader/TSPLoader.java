@@ -7,10 +7,7 @@ import java.util.regex.Pattern;
 
 public class TSPLoader {
 
-    public TSPLoader() {
-    }
-
-    public double[][] loadDistanceMatrixFromFile(String filePath) throws FileNotFoundException, IllegalArgumentException {
+    public static double[][] loadDistanceMatrixFromFile(String filePath) throws FileNotFoundException, IllegalArgumentException {
         Scanner scanner = new Scanner(new File(filePath));
         String line = "";
 
@@ -68,7 +65,7 @@ public class TSPLoader {
         }
     }
 
-    public double[][] loadCoordinatesMatrixFromFile(String filePath) throws FileNotFoundException, IllegalArgumentException {
+    public static double[][] loadCoordinatesMatrixFromFile(String filePath) throws FileNotFoundException, IllegalArgumentException {
         Scanner scanner = new Scanner(new File(filePath));
         String line = "";
 

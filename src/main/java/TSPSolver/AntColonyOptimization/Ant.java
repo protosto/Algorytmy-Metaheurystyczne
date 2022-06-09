@@ -19,7 +19,6 @@ public class Ant extends Thread {
     private boolean isSymmetrical;
     private TSPSolution tspSolution;
 
-
     public Ant(Integer startingPoint, double localPheromoneEvaporationCoefficient, double[][] pheromoneMatrix, double[][] distanceMatrix, double startPheromoneValue, double exploitationProbability, double alpha, double beta, boolean isSymmetrical) {
         this.startingPoint = startingPoint;
         this.localPheromoneEvaporationCoefficient = localPheromoneEvaporationCoefficient;
@@ -79,8 +78,8 @@ public class Ant extends Thread {
             sum += Math.pow(pheromoneMatrix[firstNode][node], alpha) * Math.pow((1.0 / distanceMatrix[firstNode][node]), beta);
         }
 
-        Integer exploitationNode = -1;
-        Integer biasedExplorationNode = -1;
+        Integer exploitationNode = unvisitedNodes.get(0);
+        Integer biasedExplorationNode = unvisitedNodes.get(0);
         Double probabilityOfExploitationNode = 0.0;
 
         for(Integer node : unvisitedNodes) {
